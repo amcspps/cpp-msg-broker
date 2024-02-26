@@ -3,7 +3,11 @@ cmake_policy(SET CMP0016 NEW)
 
 project(rabbitmq_server VERSION 1.0.0 DESCRIPTION "Работа с брокером сообщений, серверная часть")
 
+set(CMAKE_BUILD_TYPE Debug)
+
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-enable_testing()
-add_subdirectory(test)
+add_executable(srv "src/main.cpp")
+
+#enable_testing()
+#add_subdirectory(test)
