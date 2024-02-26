@@ -2,3 +2,4 @@
 .vscode/
 build/
 CMakeLists.txt.user
+/rabbitmq-c-0.13.0
