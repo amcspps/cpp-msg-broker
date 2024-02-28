@@ -4,3 +4,4 @@ build/
 CMakeLists.txt.user
 /rabbitmq-c-0.13.0
 client/proto-files/message.pb.*
+server/proto-files/message.pb.*

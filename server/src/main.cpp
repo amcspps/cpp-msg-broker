@@ -11,7 +11,7 @@
 
 #include <assert.h>
 
-#include "utils.h"
+#include "utils.hpp"
 
 int main(int argc, char const *const *argv) {
   char const *hostname;
@@ -25,7 +25,7 @@ int main(int argc, char const *const *argv) {
   amqp_bytes_t queuename;
 
   if (argc < 6) {
-    fprintf(stderr, "Usage: amqp_listen host port exchangename exchangetype bindingkey\n");
+    fprintf(stderr, "Usage: srv host port exchangename exchangetype bindingkey\n");
     return 1;
   }
 
@@ -115,11 +115,8 @@ int main(int argc, char const *const *argv) {
       // Публикация сообщения в тот же exchangename и с тем же routing key
       die_on_error(amqp_basic_publish(conn, 1, amqp_cstring_bytes(exchangename),
                                       amqp_cstring_bytes(bindingkey), 0, 0,
-                                      &props, amqp_cstring_bytes("привет")),
+                                      &props, amqp_cstring_bytes("answer")),
                    "Publishing");
-
-      amqp_destroy_envelope(&envelope);
-
 
       amqp_destroy_envelope(&envelope);
     }

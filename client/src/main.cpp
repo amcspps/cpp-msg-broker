@@ -25,7 +25,7 @@ int main(int argc, char const *const *argv) {
   if (argc < 6) {
     fprintf(
         stderr,
-        "Usage: amqp_sendstring host port exchange routingkey messagebody kek\n");
+        "Usage: cl host port exchange routingkey messagebody\n");
     return 1;
   }
 
