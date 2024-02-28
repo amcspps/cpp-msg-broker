@@ -17,6 +17,6 @@ add_executable(cl "src/main.cpp" "src/utils.cpp")
 #add_subdirectory(test)
 
 target_link_libraries(cl Message ${PROTOBUF_DEPS})
-#target_link_directories(cl PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq)
+target_link_directories(cl PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq)
 target_link_libraries(cl rabbitmq)
 
