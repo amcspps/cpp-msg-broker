@@ -87,7 +87,7 @@ int main(int argc, char const *const *argv) {
     amqp_basic_properties_t reply_props;
     reply_props._flags = AMQP_BASIC_CORRELATION_ID_FLAG;
     reply_props.correlation_id = envelope.message.properties.correlation_id;
-    
+    printf("UUID: %s\n", (char *)envelope.message.properties.correlation_id.bytes);
     die_on_error(amqp_basic_publish(conn, 1, amqp_empty_bytes,
                                     envelope.message.properties.reply_to, 0, 0,
                                     &reply_props, amqp_cstring_bytes("answer")),

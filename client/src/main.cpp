@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <uuid/uuid.h>
 
 #include <rabbitmq-c/amqp.h>
 #include <rabbitmq-c/tcp_socket.h>
@@ -13,6 +14,8 @@
 int main(int argc, char *argv[]) {
   char const *hostname;
   int port, status;
+  uuid_t uuid;
+  char uuid_str[37];
   amqp_connection_state_t conn;
   amqp_socket_t *socket = NULL;
   amqp_bytes_t reply_to_queue;
@@ -78,7 +81,10 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "Out of memory while copying queue name");
       return 1;
     }
-    props.correlation_id = amqp_cstring_bytes("1");
+    uuid_generate(uuid);
+    uuid_unparse(uuid, uuid_str);
+    printf("UUID: %s\n", uuid_str);
+    props.correlation_id = amqp_cstring_bytes(uuid_str);
 
     /*
       publish
