@@ -9,7 +9,7 @@
 #include <assert.h>
 
 #include "utils.hpp"
-
+#include "../proto-files/message.pb.h"
 
 int main(int argc, char const *const *argv) {
   char const *hostname;
@@ -70,27 +70,28 @@ int main(int argc, char const *const *argv) {
     if (AMQP_RESPONSE_NORMAL != res.reply_type) {
       break;
     }
-    printf("Delivery %u, exchange %.*s routingkey %.*s\n",
-           (unsigned)envelope.delivery_tag, (int)envelope.exchange.len,
-           (char *)envelope.exchange.bytes, (int)envelope.routing_key.len,
-           (char *)envelope.routing_key.bytes);
-
-    if (envelope.message.properties._flags & AMQP_BASIC_CONTENT_TYPE_FLAG) {
-      printf("Content-type: %.*s\n",
-             (int)envelope.message.properties.content_type.len,
-             (char *)envelope.message.properties.content_type.bytes);
-    }
-    printf("----\n");
-
-    amqp_dump(envelope.message.body.bytes, envelope.message.body.len);
+    
+    TestTask::Messages::Request request;
+    request.ParseFromString(std::string((const char*)envelope.message.body.bytes));
+    std::cout << "received from client: " << request.req() << std::endl;
+    
 
     amqp_basic_properties_t reply_props;
     reply_props._flags = AMQP_BASIC_CORRELATION_ID_FLAG;
     reply_props.correlation_id = envelope.message.properties.correlation_id;
-    printf("UUID: %s\n", (char *)envelope.message.properties.correlation_id.bytes);
+    
+
+    TestTask::Messages::Response response;
+    response.set_id("test-response");
+    response.set_res(request.req()*2);
+    std::string serialized_response;
+    if (!response.SerializeToString(&serialized_response)) {
+      fprintf(stderr, "Failed to serialize Protobuf response\n");
+      return 1;
+    }
     die_on_error(amqp_basic_publish(conn, 1, amqp_empty_bytes,
                                     envelope.message.properties.reply_to, 0, 0,
-                                    &reply_props, amqp_cstring_bytes("answer")),
+                                    &reply_props, amqp_cstring_bytes(serialized_response.c_str())),
                  "Publishing");
 
     amqp_destroy_envelope(&envelope);

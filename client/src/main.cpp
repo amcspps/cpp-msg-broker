@@ -10,6 +10,8 @@
 #include <assert.h>
 
 #include "utils.hpp"
+#include "../proto-files/message.pb.h"
+
 
 int main(int argc, char *argv[]) {
   char const *hostname;
@@ -23,10 +25,29 @@ int main(int argc, char *argv[]) {
   hostname = argv[1];
   port = atoi(argv[2]);
 
+
+
   if (argc < 3) { /* minimum number of mandatory arguments */
     fprintf(stderr,
             "usage: ./cl host port");
     return 1;
+  }
+
+  /*
+    generate a random number and wrap it to a protobuf format. placeholder before qt usage
+  */
+
+  int num;
+  srand(time(NULL));  
+  TestTask::Messages::Request request;
+  request.set_id("test-request");
+  num = rand() % 129;
+  std::cout << "num to send:" << num << std::endl; 
+  request.set_req(num);
+  std::string serialized_request;
+  if (!request.SerializeToString(&serialized_request)) {
+      fprintf(stderr, "Failed to serialize Protobuf request\n");
+      return 1;
   }
 
   /*
@@ -81,9 +102,9 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "Out of memory while copying queue name");
       return 1;
     }
+    
     uuid_generate(uuid);
     uuid_unparse(uuid, uuid_str);
-    printf("UUID: %s\n", uuid_str);
     props.correlation_id = amqp_cstring_bytes(uuid_str);
 
     /*
@@ -91,7 +112,7 @@ int main(int argc, char *argv[]) {
     */
     die_on_error(amqp_basic_publish(conn, 1, amqp_empty_bytes,
                                     amqp_cstring_bytes("rpc_queue"), 0, 0,
-                                    &props, amqp_cstring_bytes("---REQUEST---")),
+                                    &props, amqp_cstring_bytes(serialized_request.c_str())),
                  "Publishing");
 
     amqp_bytes_free(props.reply_to);
@@ -116,20 +137,9 @@ int main(int argc, char *argv[]) {
         break;
       }
 
-      printf("Delivery %u, exchange %.*s routingkey %.*s\n",
-             (unsigned)envelope.delivery_tag, (int)envelope.exchange.len,
-             (char *)envelope.exchange.bytes, (int)envelope.routing_key.len,
-             (char *)envelope.routing_key.bytes);
-
-      if (envelope.message.properties._flags & AMQP_BASIC_CONTENT_TYPE_FLAG) {
-        printf("Content-type: %.*s\n",
-               (int)envelope.message.properties.content_type.len,
-               (char *)envelope.message.properties.content_type.bytes);
-      }
-      printf("----\n");
-
-      amqp_dump(envelope.message.body.bytes, envelope.message.body.len);
-
+      TestTask::Messages::Response response;
+      response.ParseFromString(std::string((const char*)envelope.message.body.bytes));
+      std::cout << "received from server: " << response.res() << std::endl;
       amqp_destroy_envelope(&envelope);
       break;
     }
