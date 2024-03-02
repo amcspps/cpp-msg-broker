@@ -10,7 +10,7 @@ include_directories(${CMAKE_SOURCE_DIR}/proto-files)
 
 add_subdirectory(proto-files)
 
-add_executable(srv "src/main.cpp" "src/utils.cpp")
+add_executable(srv "src/main.cpp" "src/utils.cpp" "src/server.cpp")
 
 #enable_testing()
 #add_subdirectory(test)
