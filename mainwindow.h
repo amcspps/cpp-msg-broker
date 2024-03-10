@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QLabel>
-
+#include <QVBoxLayout>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -22,12 +22,16 @@ public:
 private slots:
     void onConnectButtonClicked();
     void onDisconnectButtonClicked();
-    void hideConnectionStatus();
-    void showConnectionStatus();
+    void switchToMainLayout();
+    void switchToConnectLayout();
 private:
+    void createVCentralMainLayout();
+    void createVCentralConnectLayout();
     Ui::MainWindow *ui;
     QPushButton *connectButton;
     QPushButton *disconnectButton;
     QLabel *connectStatus;
+    QVBoxLayout *vCentralConnectLayout;
+    QVBoxLayout *vCentralMainLayout;
 };
 #endif // MAINWINDOW_H
