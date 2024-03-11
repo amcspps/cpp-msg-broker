@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QLineEdit>
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -28,10 +29,22 @@ private:
     void createVCentralMainLayout();
     void createVCentralConnectLayout();
     Ui::MainWindow *ui;
+    /*buttons*/
     QPushButton *connectButton;
     QPushButton *disconnectButton;
+    /*labels*/
     QLabel *connectStatus;
+    QLabel *requestInputLabel;
+    QLineEdit *requestInputLineEdit;
+    /*vertical layouts*/
     QVBoxLayout *vCentralConnectLayout;
     QVBoxLayout *vCentralMainLayout;
+    /*horizontal layouts*/
+    QHBoxLayout *hDisconnectLayout;
+    QHBoxLayout *hRequestInputLabelLayout;
+    QHBoxLayout *hRequestInputLineEditLayout;
+    QHBoxLayout *hConnectLayout;
+    QHBoxLayout *hConnectStatusLayout;
+
 };
 #endif // MAINWINDOW_H

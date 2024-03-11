@@ -20,18 +20,44 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void removeLayoutWidgets(QLayout *layout) {
+    if (!layout)
+        return;
+
+    while (QLayoutItem *item = layout->takeAt(0)) {
+        if (QWidget *widget = item->widget()) {
+            delete widget;
+        } else if (QLayout *childLayout = item->layout()) {
+            removeLayoutWidgets(childLayout);
+        }
+        delete item;
+    }
+}
+
 void MainWindow::createVCentralMainLayout() {
     vCentralMainLayout = new QVBoxLayout();
 
     disconnectButton = new QPushButton("Disconnect");
     disconnectButton->setFixedSize(300, 50);
 
-
-    QHBoxLayout *hDisconnectLayout = new QHBoxLayout();
+    hDisconnectLayout = new QHBoxLayout();
     hDisconnectLayout->addStretch();
     hDisconnectLayout->addWidget(disconnectButton);
 
+    requestInputLabel = new QLabel("Введите число для отправки:");
+    hRequestInputLabelLayout = new QHBoxLayout();
+    hRequestInputLabelLayout->addWidget(requestInputLabel);
+
+
+    hRequestInputLineEditLayout = new QHBoxLayout();
+    requestInputLineEdit = new QLineEdit();
+    hRequestInputLineEditLayout->addWidget(requestInputLineEdit);
+
+
     vCentralMainLayout->addLayout(hDisconnectLayout);
+    vCentralMainLayout->addStretch();
+    vCentralMainLayout->addLayout(hRequestInputLabelLayout);
+    vCentralMainLayout->addLayout(hRequestInputLineEditLayout);
     vCentralMainLayout->addStretch();
 
     connect(disconnectButton, &QPushButton::clicked, this, &MainWindow::onDisconnectButtonClicked);
@@ -41,13 +67,13 @@ void MainWindow::createVCentralMainLayout() {
 void MainWindow::createVCentralConnectLayout() {
     vCentralConnectLayout = new QVBoxLayout();
 
-    QHBoxLayout *hConnectLayout = new QHBoxLayout();
+    hConnectLayout = new QHBoxLayout();
     connectButton = new QPushButton("Connect");
     connectButton->setFixedSize(300, 50);
     hConnectLayout->addWidget(connectButton);
 
 
-    QHBoxLayout *hConnectStatusLayout = new QHBoxLayout();
+    hConnectStatusLayout = new QHBoxLayout();
     hConnectStatusLayout->setAlignment(Qt::AlignCenter);
     connectStatus = new QLabel();
     hConnectStatusLayout->addWidget(connectStatus);
@@ -63,7 +89,6 @@ void MainWindow::createVCentralConnectLayout() {
 void MainWindow::onConnectButtonClicked() {
     qDebug() << "connectButton clicked";
     connectButton->hide();
-    /*TODO: update hideConnectionStatus*/
     connectStatus->setText("Connected!");
     QTimer::singleShot(500, this, &MainWindow::switchToMainLayout);
 }
@@ -72,6 +97,7 @@ void MainWindow::onDisconnectButtonClicked() {
     qDebug() << "disconnectButton clicked";
     disconnectButton->hide();
     createVCentralConnectLayout();
+    removeLayoutWidgets(vCentralMainLayout);
     delete vCentralMainLayout;
     ui->centralwidget->setLayout(vCentralConnectLayout);
     connectButton->hide();
@@ -81,7 +107,7 @@ void MainWindow::onDisconnectButtonClicked() {
 
 void MainWindow::switchToMainLayout() {
     qDebug() << "switchToMainLayout call";
-    connectStatus->hide();
+    removeLayoutWidgets(vCentralConnectLayout);
     delete vCentralConnectLayout;
     createVCentralMainLayout();
     ui->centralwidget->setLayout(vCentralMainLayout);
