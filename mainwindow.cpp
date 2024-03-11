@@ -4,7 +4,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QTimer>
-
+#include <QIntValidator>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -40,27 +40,46 @@ void MainWindow::createVCentralMainLayout() {
     disconnectButton = new QPushButton("Disconnect");
     disconnectButton->setFixedSize(300, 50);
 
+    sendButton = new QPushButton("Send");
+    sendButton->setFixedSize(50, 30);
+
     hDisconnectLayout = new QHBoxLayout();
     hDisconnectLayout->addStretch();
     hDisconnectLayout->addWidget(disconnectButton);
 
     requestInputLabel = new QLabel("Введите число для отправки:");
+    requestInputLabel->setFixedSize(300, 20);
     hRequestInputLabelLayout = new QHBoxLayout();
     hRequestInputLabelLayout->addWidget(requestInputLabel);
 
 
     hRequestInputLineEditLayout = new QHBoxLayout();
     requestInputLineEdit = new QLineEdit();
+    requestValidator = new QIntValidator();
+    requestInputLineEdit->setValidator(requestValidator);
+    requestInputLineEdit->setFixedSize(300, 20);
     hRequestInputLineEditLayout->addWidget(requestInputLineEdit);
 
+
+    hSendButtonLayout = new QHBoxLayout();
+    hSendButtonLayout->addWidget(sendButton);
+
+    responseLabel = new QLabel("debug");
+    responseLabel->setFixedSize(300, 20);
+    responseLabel->setAlignment(Qt::AlignCenter);
+    hResponseLabelLayout = new QHBoxLayout();
+    hResponseLabelLayout->addWidget(responseLabel);
 
     vCentralMainLayout->addLayout(hDisconnectLayout);
     vCentralMainLayout->addStretch();
     vCentralMainLayout->addLayout(hRequestInputLabelLayout);
     vCentralMainLayout->addLayout(hRequestInputLineEditLayout);
+    vCentralMainLayout->addLayout(hResponseLabelLayout);
+    vCentralMainLayout->addLayout(hSendButtonLayout);
     vCentralMainLayout->addStretch();
 
     connect(disconnectButton, &QPushButton::clicked, this, &MainWindow::onDisconnectButtonClicked);
+    connect(sendButton, &QPushButton::clicked, this, &MainWindow::onSendButtonClicked);
 }
 
 
@@ -104,6 +123,11 @@ void MainWindow::onDisconnectButtonClicked() {
     connectStatus->setText("Disconnected!");
     QTimer::singleShot(500, this, &MainWindow::switchToConnectLayout);
 }
+
+void MainWindow::onSendButtonClicked() {
+    qDebug() << "sendButton clicked";
+    responseLabel->setText("Server reply here");
+};
 
 void MainWindow::switchToMainLayout() {
     qDebug() << "switchToMainLayout call";

@@ -6,6 +6,8 @@
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QLineEdit>
+#include <QIntValidator>
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -23,6 +25,7 @@ public:
 private slots:
     void onConnectButtonClicked();
     void onDisconnectButtonClicked();
+    void onSendButtonClicked();
     void switchToMainLayout();
     void switchToConnectLayout();
 private:
@@ -32,9 +35,12 @@ private:
     /*buttons*/
     QPushButton *connectButton;
     QPushButton *disconnectButton;
+    QPushButton *sendButton;
     /*labels*/
     QLabel *connectStatus;
     QLabel *requestInputLabel;
+    QLabel *responseLabel;
+    /*LineEdits*/
     QLineEdit *requestInputLineEdit;
     /*vertical layouts*/
     QVBoxLayout *vCentralConnectLayout;
@@ -45,6 +51,9 @@ private:
     QHBoxLayout *hRequestInputLineEditLayout;
     QHBoxLayout *hConnectLayout;
     QHBoxLayout *hConnectStatusLayout;
-
+    QHBoxLayout *hSendButtonLayout;
+    QHBoxLayout *hResponseLabelLayout;
+    /*validators*/
+    QIntValidator *requestValidator;
 };
 #endif // MAINWINDOW_H
