@@ -6,3 +6,5 @@ CMakeLists.txt.user
 client/proto-files/message.pb.*
 server/proto-files/message.pb.*
 build-*
+client
+qt-client-gui/proto-files/message.pb.*
