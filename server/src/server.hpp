@@ -7,11 +7,11 @@
 
 
 class Server {
+public:
   Server(const Server&) = delete;
   Server(Server&&) = delete;
   Server& operator=(const Server&) = delete;
   Server& operator=(Server&&) = delete;
-public:
   static Server& get_instance()  {
     static Server instance = Server();
     return instance;
