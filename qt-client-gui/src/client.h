@@ -1,0 +1,55 @@
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <uuid/uuid.h>
+
+#include <rabbitmq-c/amqp.h>
+#include <rabbitmq-c/tcp_socket.h>
+
+#include <assert.h>
+
+#include "utils.hpp"
+#include "../proto-files/message.pb.h"
+
+class Client {
+public:
+  Client(const Client&) = delete;
+  Client(Client&&) = delete;
+  Client& operator= (const Client&) = delete;
+  Client& operator= (Client&&) = delete;
+  static Client& get_instance() {
+    static Client instance = Client();
+    return instance;
+  }
+  void create_request();
+  bool load_cfg();
+  ~Client() = default;
+private:
+  Client() = default;
+
+  void connect();
+  void create_tcp_socket();
+  void open_tcp_socket();
+  void login();
+  void create_reply_queue();
+  void open_channel();
+  void set_request_properties();
+  void publish_request();
+  void set_consumer();
+  void process_response();
+  void close_channel();
+  void close_connection();
+  void disconnect();
+
+  char const *m_hostname = "localhost";
+  int m_port = 5672, m_status;
+  char m_uuid_str[37];
+  uuid_t m_uuid;
+  amqp_connection_state_t m_conn;
+  amqp_socket_t *m_socket = NULL;
+  amqp_bytes_t m_reply_to_queue;
+  TestTask::Messages::Request m_request;
+  std::string m_serialized_request;
+  amqp_basic_properties_t m_props;
+};
