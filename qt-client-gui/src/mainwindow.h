@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "client.h"
+
 #include <QMainWindow>
 #include <QPushButton>
 #include <QLabel>
@@ -29,6 +31,7 @@ private slots:
     void switchToMainLayout();
     void switchToConnectLayout();
 private:
+    Client& client = Client::get_instance();
     void createVCentralMainLayout();
     void createVCentralConnectLayout();
     Ui::MainWindow *ui;

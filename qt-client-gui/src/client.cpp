@@ -1,36 +1,64 @@
 #include "client.h"
 
-void Client::create_request() {
-  int num;
-  srand(time(NULL));  
-  m_request.set_id("test-request");
-  num = rand() % 129;
-  //std::cout << "num to send:" << num << std::endl; 
-  m_request.set_req(num);
-  if (!m_request.SerializeToString(&m_serialized_request)) {
-    throw std::runtime_error("Failed to serialize Protobuf request\n");
+// void Client::create_request() {
+//   int num;
+//   srand(time(NULL));  
+//   m_request.set_id("test-request");
+//   num = rand() % 129;
+//   m_request.set_req(num);
+//   if (!m_request.SerializeToString(&m_serialized_request)) {
+//     throw std::runtime_error("Failed to serialize Protobuf request\n");
+//   }
+//     m_props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG |
+//                    AMQP_BASIC_DELIVERY_MODE_FLAG | AMQP_BASIC_REPLY_TO_FLAG |
+//                    AMQP_BASIC_CORRELATION_ID_FLAG;
+//     m_props.content_type = amqp_cstring_bytes("text/plain");
+//     m_props.delivery_mode = 2; /* persistent delivery mode */
+//     m_props.reply_to = amqp_bytes_malloc_dup(m_reply_to_queue);
+//     if (m_props.reply_to.bytes == NULL) {
+//       throw std::runtime_error("Out of memory while copying queue name");
+//     }
+//     uuid_generate(m_uuid);
+//     uuid_unparse(m_uuid, m_uuid_str);
+//     m_props.correlation_id = amqp_cstring_bytes(m_uuid_str);
+// }
+
+void Client::publish_request(int num) {
+  uuid_t uuid;
+  char uuid_str[37];
+  //int num;
+  //srand(time(NULL));  
+  TestTask::Messages::Request request;
+  request.set_id("test-request");
+  std::cout << "num to send:" << num << std::endl; 
+  request.set_req(num);
+  std::string serialized_request;
+  if (!request.SerializeToString(&serialized_request)) {
+      throw std::runtime_error("Failed to serialize Protobuf request\n");
   }
-    m_props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG |
+
+  amqp_basic_properties_t props;
+    props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG |
                    AMQP_BASIC_DELIVERY_MODE_FLAG | AMQP_BASIC_REPLY_TO_FLAG |
                    AMQP_BASIC_CORRELATION_ID_FLAG;
-    m_props.content_type = amqp_cstring_bytes("text/plain");
-    m_props.delivery_mode = 2; /* persistent delivery mode */
-    m_props.reply_to = amqp_bytes_malloc_dup(m_reply_to_queue);
-    if (m_props.reply_to.bytes == NULL) {
+    props.content_type = amqp_cstring_bytes("text/plain");
+    props.delivery_mode = 2; /* persistent delivery mode */
+    props.reply_to = amqp_bytes_malloc_dup(m_reply_to_queue);
+    if (props.reply_to.bytes == NULL) {
       throw std::runtime_error("Out of memory while copying queue name");
+    
     }
-    uuid_generate(m_uuid);
-    uuid_unparse(m_uuid, m_uuid_str);
-    m_props.correlation_id = amqp_cstring_bytes(m_uuid_str);
-}
-
-void Client::publish_request() {
+    
+    uuid_generate(uuid);
+    uuid_unparse(uuid, uuid_str);
+    props.correlation_id = amqp_cstring_bytes(uuid_str);
+  
   die_on_error(amqp_basic_publish(m_conn, 1, amqp_empty_bytes,
                                   amqp_cstring_bytes("rpc_queue"), 0, 0,
-                                  &m_props, amqp_cstring_bytes(m_serialized_request.c_str())),
+                                  &props, amqp_cstring_bytes(serialized_request.c_str())),
                 "Publishing");
 
-  amqp_bytes_free(m_props.reply_to);
+  amqp_bytes_free(props.reply_to);
 }
 
 void  Client::set_consumer() {
@@ -42,9 +70,9 @@ void  Client::set_consumer() {
 
 void Client::process_response() {
   for (;;) {
+    std::cout << "debug here" << std::endl;
     amqp_rpc_reply_t res;
     amqp_envelope_t envelope;
-
     amqp_maybe_release_buffers(m_conn);
 
     res = amqp_consume_message(m_conn, &envelope, NULL, 0);
@@ -53,9 +81,9 @@ void Client::process_response() {
       break;
     }
 
-    TestTask::Messages::Response m_response;
-    m_response.ParseFromString(std::string((const char*)envelope.message.body.bytes));
-    std::cout << "received from server: " << m_response.res() << std::endl;
+    TestTask::Messages::Response response;
+    response.ParseFromString(std::string((const char*)envelope.message.body.bytes));
+    std::cout << "received from server: " << response.res() << std::endl;
     amqp_destroy_envelope(&envelope);
     break;
   }
@@ -110,22 +138,22 @@ void Client::create_reply_queue() {
     }
 }
 
-void Client::set_request_properties() {
-  m_props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG |
-                  AMQP_BASIC_DELIVERY_MODE_FLAG | AMQP_BASIC_REPLY_TO_FLAG |
-                  AMQP_BASIC_CORRELATION_ID_FLAG;
-  m_props.content_type = amqp_cstring_bytes("text/plain");
-  m_props.delivery_mode = 2; /* persistent delivery mode */
-  m_props.reply_to = amqp_bytes_malloc_dup(m_reply_to_queue);
-  if (m_props.reply_to.bytes == NULL) {
-    throw std::runtime_error("Out of memory while copying queue name");
-  }
+// void Client::set_request_properties() {
+//   m_props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG |
+//                   AMQP_BASIC_DELIVERY_MODE_FLAG | AMQP_BASIC_REPLY_TO_FLAG |
+//                   AMQP_BASIC_CORRELATION_ID_FLAG;
+//   m_props.content_type = amqp_cstring_bytes("text/plain");
+//   m_props.delivery_mode = 2; /* persistent delivery mode */
+//   m_props.reply_to = amqp_bytes_malloc_dup(m_reply_to_queue);
+//   if (m_props.reply_to.bytes == NULL) {
+//     throw std::runtime_error("Out of memory while copying queue name");
+//   }
   
 
-  uuid_generate(m_uuid);
-  uuid_unparse(m_uuid, m_uuid_str);
-  m_props.correlation_id = amqp_cstring_bytes(m_uuid_str);
-}
+//   uuid_generate(m_uuid);
+//   uuid_unparse(m_uuid, m_uuid_str);
+//   m_props.correlation_id = amqp_cstring_bytes(m_uuid_str);
+// }
 
 
 void Client::close_channel() {

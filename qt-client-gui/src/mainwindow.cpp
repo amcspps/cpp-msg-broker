@@ -106,6 +106,11 @@ void MainWindow::createVCentralConnectLayout() {
 }
 
 void MainWindow::onConnectButtonClicked() {
+    client.connect();
+    client.create_tcp_socket();
+    client.open_tcp_socket();
+    client.login();
+    client.open_channel();
     qDebug() << "connectButton clicked";
     connectButton->hide();
     connectStatus->setText("Connected!");
@@ -113,6 +118,9 @@ void MainWindow::onConnectButtonClicked() {
 }
 
 void MainWindow::onDisconnectButtonClicked() {
+    client.close_channel();
+    client.close_connection();
+    client.disconnect();
     qDebug() << "disconnectButton clicked";
     disconnectButton->hide();
     createVCentralConnectLayout();
@@ -126,7 +134,15 @@ void MainWindow::onDisconnectButtonClicked() {
 
 void MainWindow::onSendButtonClicked() {
     qDebug() << "sendButton clicked";
-    responseLabel->setText("Server reply here");
+    if(requestInputLineEdit->text().isEmpty()) {
+        responseLabel->setText("input something");
+    }
+    else {
+        client.create_reply_queue();
+        client.publish_request(requestInputLineEdit->text().toInt());
+        client.set_consumer();
+        client.process_response();
+    }
 };
 
 void MainWindow::switchToMainLayout() {

@@ -21,9 +21,9 @@ include_directories(${CMAKE_SOURCE_DIR}/proto-files)
 #add_subdirectory(test)
 
 set(PROJECT_SOURCES
-        src/test-oop-main.cpp
+        #src/test-oop-main.cpp
         src/client.cpp
-        #src/main.cpp
+        src/main.cpp
         src/mainwindow.cpp
         src/mainwindow.h
         src/mainwindow.ui

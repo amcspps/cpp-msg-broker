@@ -101,7 +101,7 @@ void Server::process() {
                                     envelope.message.properties.reply_to, 0, 0,
                                     &reply_props, amqp_cstring_bytes(serialized_response.c_str())),
                  "Publishing");
-
+    //std::cout << "successfully sent: " << response.res() << std::endl;
     amqp_destroy_envelope(&envelope);
   }
 }

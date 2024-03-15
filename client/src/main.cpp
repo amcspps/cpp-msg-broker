@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
   amqp_channel_open(conn, 1);
   die_on_amqp_error(amqp_get_rpc_reply(conn), "Opening channel");
 
+  for (int i = 0; i < 3; ++i) {
   /*
      create private reply_to queue
   */
@@ -150,7 +151,7 @@ int main(int argc, char *argv[]) {
   /*
      closing
   */
-
+  }
   die_on_amqp_error(amqp_channel_close(conn, 1, AMQP_REPLY_SUCCESS),
                     "Closing channel");
   die_on_amqp_error(amqp_connection_close(conn, AMQP_REPLY_SUCCESS),

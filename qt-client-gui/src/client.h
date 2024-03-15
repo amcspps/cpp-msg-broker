@@ -22,34 +22,35 @@ public:
     static Client instance = Client();
     return instance;
   }
-  void create_request();
+  //void create_request();
   bool load_cfg();
-  ~Client() = default;
-private:
-  Client() = default;
-
   void connect();
   void create_tcp_socket();
   void open_tcp_socket();
   void login();
   void create_reply_queue();
   void open_channel();
-  void set_request_properties();
-  void publish_request();
+  //void set_request_properties();
+  void publish_request(int num);
   void set_consumer();
   void process_response();
   void close_channel();
   void close_connection();
   void disconnect();
+  ~Client() = default;
+private:
+  Client() = default;
+
+  
 
   char const *m_hostname = "localhost";
   int m_port = 5672, m_status;
-  char m_uuid_str[37];
-  uuid_t m_uuid;
+  //char m_uuid_str[37];
+  //uuid_t m_uuid;
   amqp_connection_state_t m_conn;
   amqp_socket_t *m_socket = NULL;
   amqp_bytes_t m_reply_to_queue;
-  TestTask::Messages::Request m_request;
-  std::string m_serialized_request;
-  amqp_basic_properties_t m_props;
+  //TestTask::Messages::Request m_request;
+  //std::string m_serialized_request;
+  //amqp_basic_properties_t m_props;
 };
