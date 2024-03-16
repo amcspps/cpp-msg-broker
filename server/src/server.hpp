@@ -2,6 +2,10 @@
 #include <rabbitmq-c/tcp_socket.h>
 #include <string>
 #include "utils.hpp"
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
+
 #ifndef SERVER_H
 #define SERVER_H
 
@@ -16,7 +20,7 @@ public:
     static Server instance = Server();
     return instance;
   }
-  bool load_cfg();
+  void load_cfg(po::variables_map& vm);
   void run();
   ~Server() = default;
 private:
@@ -26,18 +30,22 @@ private:
   void open_tcp_socket();
   void login();
   void open_channel();
-  void declare_queue(const std::string& rpc_queue);
+  void declare_queue();
   void set_queue_listener();
   void process();
   void close_channel();
   void close_connection();
   void disconnect();
 
-  char const *m_hostname = "localhost";
-  int m_port = 5672, m_status;
+  void set_hostname(std::string hostname);
+  void set_port(int port);
+  void set_queuename(std::string queuename);
+
+  std::string m_hostname;
+  int m_port, m_status;
   amqp_socket_t *m_socket = NULL;
   amqp_connection_state_t m_conn;
-  amqp_bytes_t m_queuename;
+  std::string m_queuename;
 };
 
 #endif

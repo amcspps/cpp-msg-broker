@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-
+find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 add_subdirectory(proto-files)
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -21,7 +21,6 @@ include_directories(${CMAKE_SOURCE_DIR}/proto-files)
 #add_subdirectory(test)
 
 set(PROJECT_SOURCES
-        #src/test-oop-main.cpp
         src/client.cpp
         src/main.cpp
         src/mainwindow.cpp
@@ -46,6 +45,8 @@ target_link_libraries(myclient
                       Message ${PROTOBUF_DEPS}
                       uuid
                       rabbitmq
+                      Boost::program_options 
+                      Boost::filesystem
                       )
 
 target_link_directories(myclient PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq) # trouble with arch, manual library build

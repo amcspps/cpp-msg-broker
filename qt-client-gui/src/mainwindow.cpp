@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     createVCentralConnectLayout();
     ui->centralwidget->setLayout(vCentralConnectLayout);
-
 }
 
 MainWindow::~MainWindow()

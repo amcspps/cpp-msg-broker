@@ -2,9 +2,32 @@
 #include "../proto-files/message.pb.h"
 #include <stdexcept>
 
-bool Server::load_cfg() {
-  //TODO: later 
-  return true;
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+#include <boost/filesystem.hpp>
+
+namespace pt = boost::property_tree;
+namespace fs = boost::filesystem;
+
+void Server::set_hostname(std::string hostname) {
+  m_hostname = hostname;
+};
+
+void Server::set_port(int port) {
+  m_port = port;
+};
+
+void Server::set_queuename(std::string queuename){
+  m_queuename = queuename;
+};
+
+void Server::load_cfg(po::variables_map& vm) {
+  pt::ptree tree;
+  pt::ini_parser::read_ini(fs::absolute(vm["config"].as<std::string>()).string(), tree); 
+
+  set_hostname(tree.get<std::string>("server.host"));
+  set_port(tree.get<int>("server.port"));
+  set_queuename(tree.get<std::string>("server.queuename"));
 }
 
 void Server::connect() {
@@ -22,7 +45,7 @@ void Server::create_tcp_socket() {
 };
 
 void Server::open_tcp_socket() {
-  m_status = amqp_socket_open(m_socket, m_hostname, m_port);
+  m_status = amqp_socket_open(m_socket, m_hostname.c_str(), m_port);
   if (m_status) {
     die("opening TCP socket");
   }
@@ -39,15 +62,14 @@ void Server::open_channel() {
   die_on_amqp_error(amqp_get_rpc_reply(m_conn), "Opening channel");
 };
 
-void Server::declare_queue(const std::string& rpc_queue = "rpc_queue") {
-   m_queuename = amqp_cstring_bytes(rpc_queue.c_str());
+void Server::declare_queue() {
     amqp_queue_declare_ok_t *r = amqp_queue_declare(
-        m_conn, 1, m_queuename, 0, 0, 0, 1, amqp_empty_table);
+        m_conn, 1, amqp_cstring_bytes(m_queuename.c_str()), 0, 0, 0, 1, amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(m_conn), "Declaring queue");
 };
 
 void Server::set_queue_listener() {
-  amqp_basic_consume(m_conn, 1, m_queuename, amqp_empty_bytes,
+  amqp_basic_consume(m_conn, 1, amqp_cstring_bytes(m_queuename.c_str()), amqp_empty_bytes,
                        0, 0, 0, amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(m_conn), "Consuming");
 };
@@ -81,7 +103,6 @@ void Server::process() {
     TestTask::Messages::Request request;
     request.ParseFromString(std::string((const char*)envelope.message.body.bytes));
     std::cout << "received from client: " << request.req() << std::endl;
-    
 
     amqp_basic_properties_t reply_props;
     reply_props._flags = AMQP_BASIC_CORRELATION_ID_FLAG;
@@ -112,7 +133,7 @@ void Server::run() {
   open_tcp_socket();
   login();
   open_channel();
-  declare_queue("rpc_queue");
+  declare_queue();
   set_queue_listener();
   process();
   close_channel();

@@ -12,6 +12,10 @@
 #include "utils.hpp"
 #include "../proto-files/message.pb.h"
 
+#include <boost/program_options.hpp>
+
+namespace po = boost::program_options;
+
 class Client {
 public:
   Client(const Client&) = delete;
@@ -22,15 +26,13 @@ public:
     static Client instance = Client();
     return instance;
   }
-  //void create_request();
-  bool load_cfg();
+  void load_cfg(po::variables_map& vm);
   void connect();
   void create_tcp_socket();
   void open_tcp_socket();
   void login();
   void create_reply_queue();
   void open_channel();
-  //void set_request_properties();
   void publish_request(int num);
   void set_consumer();
   void process_response();
@@ -41,16 +43,12 @@ public:
 private:
   Client() = default;
 
-  
+  void set_hostname(std::string hostname);
+  void set_port(int port);
 
-  char const *m_hostname = "localhost";
-  int m_port = 5672, m_status;
-  //char m_uuid_str[37];
-  //uuid_t m_uuid;
+  std::string m_hostname;
+  int m_port, m_status;
   amqp_connection_state_t m_conn;
   amqp_socket_t *m_socket = NULL;
   amqp_bytes_t m_reply_to_queue;
-  //TestTask::Messages::Request m_request;
-  //std::string m_serialized_request;
-  //amqp_basic_properties_t m_props;
 };
