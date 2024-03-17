@@ -3,6 +3,8 @@
 #include <string>
 #include "utils.hpp"
 #include <boost/program_options.hpp>
+#include <chrono>
+#include <condition_variable>
 
 namespace po = boost::program_options;
 
@@ -47,5 +49,6 @@ private:
   amqp_connection_state_t m_conn;
   std::string m_queuename;
 };
+
 
 #endif

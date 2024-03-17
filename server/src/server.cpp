@@ -6,6 +6,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/filesystem.hpp>
 
+
 namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
 
@@ -94,12 +95,16 @@ void Server::process() {
     amqp_envelope_t envelope;
     amqp_maybe_release_buffers(m_conn);
 
-    res = amqp_consume_message(m_conn, &envelope, NULL, 0);
+    timeval timeout;
+    timeout.tv_sec = 10;
+    timeout.tv_usec = 0;
+
+    res = amqp_consume_message(m_conn, &envelope, &timeout, 0);
 
     if (AMQP_RESPONSE_NORMAL != res.reply_type) {
       break;
     }
-    
+
     TestTask::Messages::Request request;
     request.ParseFromString(std::string((const char*)envelope.message.body.bytes));
     std::cout << "received from client: " << request.req() << std::endl;
@@ -122,8 +127,8 @@ void Server::process() {
                                     envelope.message.properties.reply_to, 0, 0,
                                     &reply_props, amqp_cstring_bytes(serialized_response.c_str())),
                  "Publishing");
-    //std::cout << "successfully sent: " << response.res() << std::endl;
     amqp_destroy_envelope(&envelope);
+
   }
 }
 
