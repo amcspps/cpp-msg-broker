@@ -37,6 +37,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 else()
     add_executable(myclient
         ${PROJECT_SOURCES}
+        src/settings-dialog.h
+        src/settings-dialog.cpp
+        src/connect-layout.cpp
+        src/connect-layout.h
+        src/main-layout.h
+        src/main-layout.cpp
     )
 endif()
 

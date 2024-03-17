@@ -67,23 +67,27 @@ void  Client::set_consumer() {
     amqp_bytes_free(m_reply_to_queue);
 }
 
-void Client::process_response() {
+std::tuple<bool, std::string> Client::process_response() {
   for (;;) {
     amqp_rpc_reply_t res;
     amqp_envelope_t envelope;
     amqp_maybe_release_buffers(m_conn);
 
-    res = amqp_consume_message(m_conn, &envelope, NULL, 0);
+    timeval timeout;
+    timeout.tv_sec = 5;
+    timeout.tv_usec = 0;
+
+    res = amqp_consume_message(m_conn, &envelope, &timeout, 0);
 
     if (AMQP_RESPONSE_NORMAL != res.reply_type) {
-      break;
+        return std::tuple<bool, std::string> {false, "false"};
     }
 
     TestTask::Messages::Response response;
     response.ParseFromString(std::string((const char*)envelope.message.body.bytes));
     std::cout << "received from server: " << response.res() << std::endl;
     amqp_destroy_envelope(&envelope);
-    break;
+    return std::tuple<bool, std::string> {true, std::to_string(response.res())};;
   }
 }
 

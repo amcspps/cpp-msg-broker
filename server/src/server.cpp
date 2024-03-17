@@ -120,8 +120,6 @@ void Server::process() {
     std::string serialized_response;
     if (!response.SerializeToString(&serialized_response)) {
       fprintf(stderr, "Failed to serialize Protobuf response\n");
-      /*send client info about protobuf serialization fail */
-      //return 1;
     }
     die_on_error(amqp_basic_publish(m_conn, 1, amqp_empty_bytes,
                                     envelope.message.properties.reply_to, 0, 0,

@@ -13,7 +13,7 @@
 #include "../proto-files/message.pb.h"
 
 #include <boost/program_options.hpp>
-
+#include <tuple>
 namespace po = boost::program_options;
 
 class Client {
@@ -35,7 +35,7 @@ public:
   void open_channel();
   void publish_request(int num);
   void set_consumer();
-  void process_response();
+  std::tuple<bool, std::string> process_response();
   void close_channel();
   void close_connection();
   void disconnect();
