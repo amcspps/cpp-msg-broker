@@ -18,6 +18,13 @@ public:
     void hideSendButton();
     void hideRequestInputLabel();
     void hideRequestInputLineEdit();
+    void showRequestInputLineEdit();
+    void showRequestInputLabel();
+    void showSendButton();
+    void showDisconnectButton();
+    void clearResponseLabel();
+    void clearRequestInputLineEdit();
+    QString getRequestInputLineEditText();
     ~MainWidget();
 private:
     QVBoxLayout * widgetVLayout;

@@ -15,6 +15,8 @@ public:
     ConnectWidget(QWidget *parent = nullptr);
     void setConnectStatus(QString status);
     void hideConnectButton();
+    void showConnectButton();
+    void clearConnectStatus();
     ~ConnectWidget();
 
 private slots:

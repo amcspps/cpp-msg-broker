@@ -29,7 +29,7 @@ MainWidget::MainWidget(QWidget *parent) {
     hRequestInputLineEditLayout = new QHBoxLayout();
     hRequestInputLineEditLayout->addWidget(requestInputLineEdit);
 
-    responseLabel = new QLabel("debug");
+    responseLabel = new QLabel("response status will be here");
     responseLabel->setFixedSize(300, 20);
     responseLabel->setAlignment(Qt::AlignCenter);
 
@@ -76,14 +76,10 @@ void MainWidget::onDisconnectButtonClicked() {
     emit disconnectButtonClicked();
 }
 
-
-
 void MainWidget::onSendButtonClicked() {
     qDebug() << "on send button clicked";
     emit sendButtonClicked();
 }
-
-
 
 void MainWidget::setResponseLabel(QString label) {
     responseLabel->setText(label);
@@ -106,11 +102,31 @@ void MainWidget::hideRequestInputLineEdit() {
     requestInputLineEdit->hide();
 }
 
+void MainWidget::showRequestInputLabel() {
+    requestInputLabel->show();
+}
 
+void MainWidget::showRequestInputLineEdit() {
+    requestInputLineEdit->show();
+}
 
+void MainWidget::clearResponseLabel() {
+    responseLabel->clear();
+}
 
+void MainWidget::showSendButton() {
+    sendButton->show();
+}
 
+void MainWidget::showDisconnectButton() {
+    disconnectButton->show();
+}
 
+QString MainWidget::getRequestInputLineEditText() {
+    return requestInputLineEdit->text();
+}
 
-
+void MainWidget::clearRequestInputLineEdit() {
+    requestInputLineEdit->clear();
+}
 

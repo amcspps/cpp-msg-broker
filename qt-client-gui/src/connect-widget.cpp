@@ -42,13 +42,17 @@ void ConnectWidget::onConnectButtonClicked() {
 
 void ConnectWidget::setConnectStatus(QString status) {
     connectStatus->setText(status);
-
 }
 
 void ConnectWidget::hideConnectButton() {
     connectButton->hide();
 }
 
+void ConnectWidget::showConnectButton() {
+    connectButton->show();
+}
 
-
+void ConnectWidget::clearConnectStatus() {
+    connectStatus->clear();
+}
 

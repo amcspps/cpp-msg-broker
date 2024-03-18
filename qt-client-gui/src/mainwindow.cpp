@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -10,7 +9,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    setGeometry(100,100,800,600);
+    setGeometry(100,100, 800, 600);
     connectWidget = new ConnectWidget();
     mainWidget = new MainWidget();
 
@@ -43,6 +42,12 @@ void MainWindow::onConnectButtonClicked() {
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
+        mainWidget->showRequestInputLabel();
+        mainWidget->showRequestInputLineEdit();
+        mainWidget->clearResponseLabel();
+        mainWidget->showSendButton();
+        mainWidget->showDisconnectButton();
+        mainWidget->clearRequestInputLineEdit();
         centralStackedWidget->setCurrentWidget(mainWidget);
         timer->deleteLater();
     });
@@ -61,6 +66,9 @@ void MainWindow::onDisconnectButtonClicked() {
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
+        //connectWidget
+        connectWidget->showConnectButton();
+        connectWidget->clearConnectStatus();
         centralStackedWidget->setCurrentWidget(connectWidget);
         timer->deleteLater();
     });
@@ -69,61 +77,33 @@ void MainWindow::onDisconnectButtonClicked() {
 }
 void MainWindow::onSendButtonClicked() {
     qDebug() << "mainwindow on send button clicked";
+     if(mainWidget->getRequestInputLineEditText().isEmpty()) {
+         mainWidget->setResponseLabel("input something");
+     }
+     else {
+         client.create_reply_queue();
+         client.publish_request(mainWidget->getRequestInputLineEditText().toInt());
+         client.set_consumer();
+         auto response = client.process_response();
+         if(!std::get<0>(response)) {
+             mainWidget->setResponseLabel("request timed out, server is down");
+         }
+         else {
+             mainWidget->setResponseLabel(
+                         QString::fromStdString("received from server: " + std::get<1>(response)));
+             std::cout << "response: " << std::get<1>(response) << std::endl;
+         }
+     }
 }
 
-// void MainWindow::onDisconnectButtonClicked() {
-//     client.close_channel();
-//     client.close_connection();
-//     client.disconnect();
-//     qDebug() << "disconnectButton clicked";
-//     disconnectButton->hide();
-//     //createVCentralConnectLayout();
-//     //removeLayoutWidgets(vCentralMainLayout);
-//     //delete vCentralMainLayout;
-//     ui->centralwidget->setLayout(vCentralConnectLayout);
-//     connectButton->hide();
-//     connectStatus->setText("Disconnected!");
-//     QTimer::singleShot(500, this, &MainWindow::switchToConnectLayout);
-// }
 
 // void MainWindow::onSendButtonClicked() {
 //     qDebug() << "sendButton clicked";
-//     if(requestInputLineEdit->text().isEmpty()) {
-//         responseLabel->setText("input something");
-//     }
-//     else {
-//         client.create_reply_queue();
-//         client.publish_request(requestInputLineEdit->text().toInt());
-//         client.set_consumer();
-//         auto response = client.process_response();
-//         if(!std::get<0>(response)) {
-//             responseLabel->setText("request timed out, server is down");
-//         }
-//         else {
-//             responseLabel->setText(QString::fromStdString("received from server: " + std::get<1>(response)));
-//             std::cout << "response: " << std::get<1>(response) << std::endl;
-//         }
-//     }
+
 // };
 
-// void MainWindow::switchToMainLayout() {
-//     qDebug() << "switchToMainLayout call";
-//     //removeLayoutWidgets(vCentralConnectLayout);
-//     //delete vCentralConnectLayout;
-//     //createVCentralMainLayout();
-//     ui->centralwidget->setLayout(vCentralMainLayout);
-// }
-
-//void MainWindow::switchToConnectLayout() {
-    //qDebug() << "switchToConnectLayout call";
-    //connectButton->show();
-    //connectStatus->clear();
-//}
 
 
-// void MainWindow::createSettingsDialog() {
-
-// }
 
 // void MainWindow::onBtnClicked() {
 //     qDebug() << "signal caught" ;

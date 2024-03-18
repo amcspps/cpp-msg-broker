@@ -27,6 +27,12 @@ set(PROJECT_SOURCES
         src/mainwindow.h
         src/mainwindow.ui
         src/utils.cpp
+        src/settings-dialog.h
+        src/settings-dialog.cpp
+        src/connect-widget.cpp
+        src/connect-widget.h
+        src/main-widget.h
+        src/main-widget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -37,12 +43,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 else()
     add_executable(myclient
         ${PROJECT_SOURCES}
-        src/settings-dialog.h
-        src/settings-dialog.cpp
-        src/connect-widget.cpp
-        src/connect-widget.h
-        src/main-widget.h
-        src/main-widget.cpp
     )
 endif()
 
@@ -55,7 +55,7 @@ target_link_libraries(myclient
                       Boost::filesystem
                       )
 
-target_link_directories(myclient PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq) # trouble with arch, manual library build
+#target_link_directories(myclient PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq) # trouble with arch, manual library build
 
 
 include(GNUInstallDirs)
