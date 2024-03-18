@@ -27,6 +27,9 @@ public:
     return instance;
   }
   void load_cfg(po::variables_map& vm);
+  void load_cfg();
+  void set_cfg_path(po::variables_map& vm);
+  std::string get_cfg_path();
   void connect();
   void create_tcp_socket();
   void open_tcp_socket();
@@ -46,7 +49,7 @@ private:
   void set_hostname(std::string hostname);
   void set_port(int port);
 
-  std::string m_hostname;
+  std::string m_hostname, m_cfg_path;
   int m_port, m_status;
   amqp_connection_state_t m_conn;
   amqp_socket_t *m_socket = NULL;

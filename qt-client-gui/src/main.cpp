@@ -16,7 +16,8 @@ int main(int argc, char *argv[]) {
       return 1;
     }
     Client &cl = Client::get_instance();
-    cl.load_cfg(vm);
+    cl.set_cfg_path(vm);
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

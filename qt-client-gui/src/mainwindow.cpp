@@ -57,7 +57,6 @@ void MainWindow::onDisconnectButtonClicked() {
     mainWidget->hideRequestInputLineEdit();
     mainWidget->setResponseLabel("Disconnected!");
 
-
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
         connectWidget->showConnectButton();
@@ -68,6 +67,7 @@ void MainWindow::onDisconnectButtonClicked() {
     timer->start(500);
 
 }
+
 void MainWindow::onSendButtonClicked() {
     qDebug() << "mainwindow on send button clicked";
      if(mainWidget->getRequestInputLineEditText().isEmpty()) {
@@ -92,28 +92,38 @@ void MainWindow::onSendButtonClicked() {
 
 void MainWindow::onOkButtonClicked() {
     qDebug() << "Mainwindow slot Ok button clicked";
-    client.connect();
-    client.create_tcp_socket();
-    client.open_tcp_socket();
-    client.login();
-    client.open_channel();
+    settingsDialog->dumpCfgIni(client.get_cfg_path());
+    try {
+        client.load_cfg();
+        client.connect();
+        client.create_tcp_socket();
+        client.open_tcp_socket();
+        client.login();
+        client.open_channel();
+        connectWidget->hideConnectButton();
+        connectWidget->setConnectStatus("Connected!");
+        settingsDialog->hide();
 
-    connectWidget->hideConnectButton();
-    connectWidget->setConnectStatus("Connected!");
-    settingsDialog->hide();
+        QTimer *timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, [this, timer]() {
+            mainWidget->showRequestInputLabel();
+            mainWidget->showRequestInputLineEdit();
+            mainWidget->clearResponseLabel();
+            mainWidget->showSendButton();
+            mainWidget->showDisconnectButton();
+            mainWidget->clearRequestInputLineEdit();
+            centralStackedWidget->setCurrentWidget(mainWidget);
+            timer->deleteLater();
+        });
+        timer->start(500);
+    }  catch (...) {
+        connectWidget->setConnectStatus("Some trouble occured :(");
+        settingsDialog->clearHostLineEdit();
+        settingsDialog->clearPortLineEdit();
+        settingsDialog->hide();
+    }
 
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this, timer]() {
-        mainWidget->showRequestInputLabel();
-        mainWidget->showRequestInputLineEdit();
-        mainWidget->clearResponseLabel();
-        mainWidget->showSendButton();
-        mainWidget->showDisconnectButton();
-        mainWidget->clearRequestInputLineEdit();
-        centralStackedWidget->setCurrentWidget(mainWidget);
-        timer->deleteLater();
-    });
-    timer->start(500);
+
 }
 void MainWindow::onCancelButtonClicked() {
     qDebug() << "MainWindow slot cancel button clicked";

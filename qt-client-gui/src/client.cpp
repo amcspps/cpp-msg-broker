@@ -17,6 +17,13 @@ void Client::set_port(int port) {
   m_port = port;
 };
 
+void Client::load_cfg() {
+  pt::ptree tree;
+  pt::ini_parser::read_ini(fs::absolute(m_cfg_path).string(), tree); 
+
+  set_hostname(tree.get<std::string>("client.host"));
+  set_port(tree.get<int>("client.port"));
+}
 void Client::load_cfg(po::variables_map& vm) {
   pt::ptree tree;
   pt::ini_parser::read_ini(fs::absolute(vm["config"].as<std::string>()).string(), tree); 
@@ -103,14 +110,16 @@ void Client::connect() {
 void Client::create_tcp_socket() {
   m_socket = amqp_tcp_socket_new(m_conn);
   if (!m_socket) {
-    die("creating TCP socket");
+      throw std::runtime_error("creating TCP socket");
+    //die("creating TCP socket");
   }
 }
 
 void Client::open_tcp_socket() {
   m_status = amqp_socket_open(m_socket, m_hostname.c_str(), m_port);
   if (m_status) {
-    die("opening TCP socket");
+      throw std::runtime_error("opening TCP socket");
+    //die("opening TCP socket");
   }
 }
 
@@ -147,4 +156,12 @@ void Client::close_connection() {
 
 void Client::disconnect() {
   die_on_error(amqp_destroy_connection(m_conn), "Ending connection");
+}
+
+void Client::set_cfg_path(po::variables_map& vm) {
+  m_cfg_path = fs::absolute(vm["config"].as<std::string>()).string();
+}
+
+std::string Client::get_cfg_path() {
+  return m_cfg_path;
 }

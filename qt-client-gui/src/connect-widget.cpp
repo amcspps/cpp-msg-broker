@@ -16,6 +16,7 @@ ConnectWidget::ConnectWidget(QWidget *parent) {
 
 
 
+
     widgetVLayout->addStretch();
     widgetVLayout->addLayout(hConnectLayout);
     widgetVLayout->addLayout(hConnectStatusLayout);

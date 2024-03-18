@@ -27,7 +27,7 @@ public:
     QString getRequestInputLineEditText();
     ~MainWidget();
 private:
-    QVBoxLayout * widgetVLayout;
+    QVBoxLayout *widgetVLayout;
     QPushButton *disconnectButton;
     QPushButton *sendButton;
     QLabel *requestInputLabel;
