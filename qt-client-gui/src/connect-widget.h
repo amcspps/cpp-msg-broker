@@ -8,18 +8,19 @@
 #include <QLineEdit>
 #include <QIntValidator>
 
-class ConnectLayout : public QVBoxLayout {
+class ConnectWidget : public QWidget {
     Q_OBJECT
 
 public:
-    ConnectLayout(QWidget *parent = nullptr);
+    ConnectWidget(QWidget *parent = nullptr);
     void setConnectStatus(QString status);
     void hideConnectButton();
-    ~ConnectLayout();
+    ~ConnectWidget();
 
 private slots:
     void onConnectButtonClicked();
 private:
+    QVBoxLayout *widgetVLayout;
     QPushButton *connectButton;
     QLabel *connectStatus;
     QHBoxLayout *hConnectLayout;

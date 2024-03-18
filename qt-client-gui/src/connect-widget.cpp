@@ -1,7 +1,8 @@
-#include "connect-layout.h"
+#include "connect-widget.h"
 #include <QDebug>
 
-ConnectLayout::ConnectLayout(QWidget *parent) {
+ConnectWidget::ConnectWidget(QWidget *parent) {
+    widgetVLayout = new QVBoxLayout();
     connectButton = new QPushButton("Connect");
     connectButton->setFixedSize(300, 50);
 
@@ -13,34 +14,38 @@ ConnectLayout::ConnectLayout(QWidget *parent) {
     connectStatus = new QLabel();
     hConnectStatusLayout->addWidget(connectStatus);
 
-    addStretch();
-    addLayout(hConnectLayout);
-    addLayout(hConnectStatusLayout);
-    addStretch();
 
-    connect(connectButton, &QPushButton::clicked, this, &ConnectLayout::onConnectButtonClicked);
+
+    widgetVLayout->addStretch();
+    widgetVLayout->addLayout(hConnectLayout);
+    widgetVLayout->addLayout(hConnectStatusLayout);
+    widgetVLayout->addStretch();
+
+    setLayout(widgetVLayout);
+    connect(connectButton, &QPushButton::clicked, this, &ConnectWidget::onConnectButtonClicked);
 }
 
 
-ConnectLayout::~ConnectLayout() {
+ConnectWidget::~ConnectWidget() {
     delete connectButton;
     delete connectStatus;
     delete hConnectLayout;
     delete hConnectStatusLayout;
+    delete widgetVLayout;
 
 }
 
-void ConnectLayout::onConnectButtonClicked() {
+void ConnectWidget::onConnectButtonClicked() {
     qDebug() << "Slot connect button clicked";
     emit connectButtonClicked();
 }
 
-void ConnectLayout::setConnectStatus(QString status) {
+void ConnectWidget::setConnectStatus(QString status) {
     connectStatus->setText(status);
 
 }
 
-void ConnectLayout::hideConnectButton() {
+void ConnectWidget::hideConnectButton() {
     connectButton->hide();
 }
 

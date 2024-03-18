@@ -1,5 +1,5 @@
-#ifndef MAINLAYOUT_H
-#define MAINLAYOUT_H
+#ifndef MainWidget_H
+#define MainWidget_H
 
 #include <QObject>
 #include <QWidget>
@@ -9,15 +9,18 @@
 #include <QLineEdit>
 #include <QIntValidator>
 
-class MainLayout : public QVBoxLayout {
+class MainWidget : public QWidget {
     Q_OBJECT
 public:
-    MainLayout(QWidget *parent = nullptr);
+    MainWidget(QWidget *parent = nullptr);
     void setResponseLabel(QString label);
     void hideDisconnectButton();
     void hideSendButton();
-    ~MainLayout();
+    void hideRequestInputLabel();
+    void hideRequestInputLineEdit();
+    ~MainWidget();
 private:
+    QVBoxLayout * widgetVLayout;
     QPushButton *disconnectButton;
     QPushButton *sendButton;
     QLabel *requestInputLabel;
@@ -42,4 +45,4 @@ signals:
 
 
 
-#endif // MAINLAYOUT_H
+#endif // MainWidget_H

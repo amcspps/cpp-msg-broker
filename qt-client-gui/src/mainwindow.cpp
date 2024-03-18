@@ -9,21 +9,26 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-    connectLayout = new ConnectLayout();
-    mainLayout = new MainLayout();
+    setGeometry(100,100,800,600);
+    connectWidget = new ConnectWidget();
+    mainWidget = new MainWidget();
 
-    ui->centralwidget->setLayout(connectLayout);
-    connect(connectLayout, &ConnectLayout::connectButtonClicked, this, &MainWindow::onConnectButtonClicked);
-    connect(mainLayout, &MainLayout::disconnectButtonClicked, this, &MainWindow::onDisconnectButtonClicked);
-    connect(mainLayout, &MainLayout::sendButtonClicked, this, &MainWindow::onSendButtonClicked);
+    centralStackedWidget = new QStackedWidget();
+    setCentralWidget(centralStackedWidget);
+    centralStackedWidget->addWidget(connectWidget);
+    centralStackedWidget->addWidget(mainWidget);
+
+    connect(connectWidget, &ConnectWidget::connectButtonClicked, this, &MainWindow::onConnectButtonClicked);
+    connect(mainWidget, &MainWidget::disconnectButtonClicked, this, &MainWindow::onDisconnectButtonClicked);
+    connect(mainWidget, &MainWidget::sendButtonClicked, this, &MainWindow::onSendButtonClicked);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    delete connectWidget;
+    delete mainWidget;
+    delete centralStackedWidget;
 }
 
 void MainWindow::onConnectButtonClicked() {
@@ -33,15 +38,12 @@ void MainWindow::onConnectButtonClicked() {
     client.open_tcp_socket();
     client.login();
     client.open_channel();
-    connectLayout->hideConnectButton();
-    connectLayout->setConnectStatus("Connected!");
+    connectWidget->hideConnectButton();
+    connectWidget->setConnectStatus("Connected!");
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
-        //delete connectLayout;
-        //ui->centralwidget->
-        ui->centralwidget->setLayout(nullptr);
-        ui->centralwidget->setLayout(mainLayout);
+        centralStackedWidget->setCurrentWidget(mainWidget);
         timer->deleteLater();
     });
     timer->start(500);
@@ -51,15 +53,15 @@ void MainWindow::onDisconnectButtonClicked() {
     client.close_channel();
     client.close_connection();
     client.disconnect();
-    mainLayout->hideDisconnectButton();
-    mainLayout->hideSendButton();
-    mainLayout->setResponseLabel("Disconnected!");
+    mainWidget->hideDisconnectButton();
+    mainWidget->hideSendButton();
+    mainWidget->hideRequestInputLabel();
+    mainWidget->hideRequestInputLineEdit();
+    mainWidget->setResponseLabel("Disconnected!");
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
-        delete mainLayout;
-        connectLayout = new ConnectLayout();
-        ui->centralwidget->setLayout(connectLayout);
+        centralStackedWidget->setCurrentWidget(connectWidget);
         timer->deleteLater();
     });
     timer->start(500);

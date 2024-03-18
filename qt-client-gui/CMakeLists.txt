@@ -39,10 +39,10 @@ else()
         ${PROJECT_SOURCES}
         src/settings-dialog.h
         src/settings-dialog.cpp
-        src/connect-layout.cpp
-        src/connect-layout.h
-        src/main-layout.h
-        src/main-layout.cpp
+        src/connect-widget.cpp
+        src/connect-widget.h
+        src/main-widget.h
+        src/main-widget.cpp
     )
 endif()
 

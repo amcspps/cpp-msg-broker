@@ -3,8 +3,8 @@
 
 #include "client.h"
 #include "settings-dialog.h"
-#include "connect-layout.h"
-#include "main-layout.h"
+#include "connect-widget.h"
+#include "main-widget.h"
 #include <QMainWindow>
 #include <QPushButton>
 #include <QLabel>
@@ -32,32 +32,10 @@ public slots:
     void onConnectButtonClicked();
     void onDisconnectButtonClicked();
     void onSendButtonClicked();
-    //void switchToMainLayout();
-    //void switchToConnectLayout();
 private:
-    Ui::MainWindow *ui;
     Client& client = Client::get_instance();
-    QStackedWidget *stackedCentralWidget;
-    ConnectLayout *connectLayout;
-    MainLayout *mainLayout;
-    //void createVCentralMainLayout();
-    //void createVCentralConnectLayout();
-
-    /*buttons*/
-    //QPushButton *connectButton;
-    //QPushButton *disconnectButton;
-    //QPushButton *sendButton;
-    /*labels*/
-    //QLabel *connectStatus;
-    //QLabel *requestInputLabel;
-    //QLabel *responseLabel;
-    /*LineEdits*/
-    //QLineEdit *requestInputLineEdit;
-    /*vertical layouts*/
-    //QVBoxLayout *vCentralConnectLayout;
-    //QVBoxLayout *vCentralMainLayout;
-    /*horizontal layouts*/
-    /*settings dialog*/
-    //QDialog *settingsDialog;
+    QStackedWidget * centralStackedWidget;
+    ConnectWidget *connectWidget;
+    MainWidget *mainWidget;
 };
 #endif // MAINWINDOW_H

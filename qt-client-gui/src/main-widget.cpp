@@ -1,8 +1,10 @@
-#include "main-layout.h"
+#include "main-widget.h"
 #include <QDebug>
 
 
-MainLayout::MainLayout(QWidget *parent) {
+MainWidget::MainWidget(QWidget *parent) {
+    widgetVLayout = new QVBoxLayout();
+
     disconnectButton = new QPushButton("Disconnect");
     disconnectButton->setFixedSize(300, 50);
 
@@ -39,19 +41,21 @@ MainLayout::MainLayout(QWidget *parent) {
 
     hSendButtonLayout->addWidget(sendButton);
 
-    addLayout(hDisconnectLayout);
-    addStretch();
-    addLayout(hRequestInputLabelLayout);
-    addLayout(hRequestInputLineEditLayout);
-    addLayout(hResponseLabelLayout);
-    addLayout(hSendButtonLayout);
-    addStretch();
 
-    connect(disconnectButton, &QPushButton::clicked, this, &MainLayout::onDisconnectButtonClicked);
-    connect(sendButton, &QPushButton::clicked, this, &MainLayout::onSendButtonClicked);
+    widgetVLayout->addLayout(hDisconnectLayout);
+    widgetVLayout->addStretch();
+    widgetVLayout->addLayout(hRequestInputLabelLayout);
+    widgetVLayout->addLayout(hRequestInputLineEditLayout);
+    widgetVLayout->addLayout(hResponseLabelLayout);
+    widgetVLayout->addLayout(hSendButtonLayout);
+    widgetVLayout->addStretch();
+
+    setLayout(widgetVLayout);
+    connect(disconnectButton, &QPushButton::clicked, this, &MainWidget::onDisconnectButtonClicked);
+    connect(sendButton, &QPushButton::clicked, this, &MainWidget::onSendButtonClicked);
 }
 
-MainLayout::~MainLayout() {
+MainWidget::~MainWidget() {
     delete disconnectButton;
     delete sendButton;
     delete requestInputLabel;
@@ -64,37 +68,43 @@ MainLayout::~MainLayout() {
     delete hRequestInputLineEditLayout;
     delete hResponseLabelLayout;
     delete hSendButtonLayout;
+    delete widgetVLayout;
 }
 
-void MainLayout::onDisconnectButtonClicked() {
+void MainWidget::onDisconnectButtonClicked() {
     qDebug() << "on disconnect button clicked";
     emit disconnectButtonClicked();
 }
 
 
 
-void MainLayout::onSendButtonClicked() {
+void MainWidget::onSendButtonClicked() {
     qDebug() << "on send button clicked";
     emit sendButtonClicked();
 }
 
 
 
-void MainLayout::setResponseLabel(QString label) {
+void MainWidget::setResponseLabel(QString label) {
     responseLabel->setText(label);
 }
 
 
-void MainLayout::hideDisconnectButton() {
+void MainWidget::hideDisconnectButton() {
     disconnectButton->hide();
 }
 
-void MainLayout::hideSendButton() {
+void MainWidget::hideSendButton() {
     sendButton->hide();
 }
 
+void MainWidget::hideRequestInputLabel() {
+    requestInputLabel->hide();
+}
 
-
+void MainWidget::hideRequestInputLineEdit() {
+    requestInputLineEdit->hide();
+}
 
 
 
