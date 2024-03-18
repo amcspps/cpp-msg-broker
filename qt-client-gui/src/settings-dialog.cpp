@@ -1,6 +1,8 @@
 #include "settings-dialog.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
+    setWindowFlags(windowFlags() & ~Qt::WindowCloseButtonHint);
+    setWindowFlags(windowFlags() | Qt::CustomizeWindowHint);
     okDialogButton = new QPushButton("Ok");
     cancelDialogButton = new QPushButton("Cancel");
 
@@ -35,6 +37,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     verticalDialogLayout->addLayout(hLogLayout);
     verticalDialogLayout->addLayout(hButtonLayout);
     setLayout(verticalDialogLayout);
+
+    connect(okDialogButton, &QPushButton::clicked,
+            this, &SettingsDialog::okButtonClicked);
+    connect(cancelDialogButton, &QPushButton::clicked,
+            this, &SettingsDialog::cancelButtonClicked);
+
 };
 
 
@@ -54,7 +62,3 @@ SettingsDialog::~SettingsDialog() {
     delete verticalDialogLayout;
 };
 
-// void SettingsDialog::onSettingsButtonClicked() {
-//     qDebug() << "QDialog Button clicked";
-//     emit buttonClicked();
-// }

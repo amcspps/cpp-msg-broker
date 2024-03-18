@@ -51,8 +51,8 @@ MainWidget::MainWidget(QWidget *parent) {
     widgetVLayout->addStretch();
 
     setLayout(widgetVLayout);
-    connect(disconnectButton, &QPushButton::clicked, this, &MainWidget::onDisconnectButtonClicked);
-    connect(sendButton, &QPushButton::clicked, this, &MainWidget::onSendButtonClicked);
+    connect(disconnectButton, &QPushButton::clicked, this, &MainWidget::disconnectButtonClicked);
+    connect(sendButton, &QPushButton::clicked, this, &MainWidget::sendButtonClicked);
 }
 
 MainWidget::~MainWidget() {
@@ -71,15 +71,6 @@ MainWidget::~MainWidget() {
     delete widgetVLayout;
 }
 
-void MainWidget::onDisconnectButtonClicked() {
-    qDebug() << "on disconnect button clicked";
-    emit disconnectButtonClicked();
-}
-
-void MainWidget::onSendButtonClicked() {
-    qDebug() << "on send button clicked";
-    emit sendButtonClicked();
-}
 
 void MainWidget::setResponseLabel(QString label) {
     responseLabel->setText(label);

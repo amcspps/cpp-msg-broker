@@ -14,12 +14,6 @@
 #include <QDialog>
 #include <QStackedWidget>
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
-QT_END_NAMESPACE
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -32,10 +26,12 @@ public slots:
     void onConnectButtonClicked();
     void onDisconnectButtonClicked();
     void onSendButtonClicked();
+    void onOkButtonClicked();
+    void onCancelButtonClicked();
 private:
-    Client& client = Client::get_instance();
-    QStackedWidget * centralStackedWidget;
+    QStackedWidget *centralStackedWidget;
     ConnectWidget *connectWidget;
     MainWidget *mainWidget;
+    SettingsDialog *settingsDialog;
 };
 #endif // MAINWINDOW_H

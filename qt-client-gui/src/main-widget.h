@@ -41,9 +41,6 @@ private:
     QHBoxLayout *hResponseLabelLayout;
     QHBoxLayout *hSendButtonLayout;
 
-private slots:
-    void onDisconnectButtonClicked();
-    void onSendButtonClicked();
 signals:
     void disconnectButtonClicked();
     void sendButtonClicked();

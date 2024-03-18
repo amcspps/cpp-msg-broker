@@ -19,8 +19,6 @@ public:
     void clearConnectStatus();
     ~ConnectWidget();
 
-private slots:
-    void onConnectButtonClicked();
 private:
     QVBoxLayout *widgetVLayout;
     QPushButton *connectButton;

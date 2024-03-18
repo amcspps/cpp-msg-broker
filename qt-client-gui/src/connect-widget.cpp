@@ -22,7 +22,7 @@ ConnectWidget::ConnectWidget(QWidget *parent) {
     widgetVLayout->addStretch();
 
     setLayout(widgetVLayout);
-    connect(connectButton, &QPushButton::clicked, this, &ConnectWidget::onConnectButtonClicked);
+    connect(connectButton, &QPushButton::clicked, this, &ConnectWidget::connectButtonClicked);
 }
 
 
@@ -33,11 +33,6 @@ ConnectWidget::~ConnectWidget() {
     delete hConnectStatusLayout;
     delete widgetVLayout;
 
-}
-
-void ConnectWidget::onConnectButtonClicked() {
-    qDebug() << "Slot connect button clicked";
-    emit connectButtonClicked();
 }
 
 void ConnectWidget::setConnectStatus(QString status) {

@@ -6,21 +6,31 @@
 #include <QIntValidator>
 #include <QComboBox>
 
+Client& client = Client::get_instance();
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setGeometry(100,100, 800, 600);
     connectWidget = new ConnectWidget();
     mainWidget = new MainWidget();
+    settingsDialog = new SettingsDialog();
 
     centralStackedWidget = new QStackedWidget();
     setCentralWidget(centralStackedWidget);
     centralStackedWidget->addWidget(connectWidget);
     centralStackedWidget->addWidget(mainWidget);
 
-    connect(connectWidget, &ConnectWidget::connectButtonClicked, this, &MainWindow::onConnectButtonClicked);
-    connect(mainWidget, &MainWidget::disconnectButtonClicked, this, &MainWindow::onDisconnectButtonClicked);
-    connect(mainWidget, &MainWidget::sendButtonClicked, this, &MainWindow::onSendButtonClicked);
+    connect(connectWidget, &ConnectWidget::connectButtonClicked,
+            this, &MainWindow::onConnectButtonClicked);
+    connect(mainWidget, &MainWidget::disconnectButtonClicked,
+            this, &MainWindow::onDisconnectButtonClicked);
+    connect(mainWidget, &MainWidget::sendButtonClicked,
+            this, &MainWindow::onSendButtonClicked);
+    connect(settingsDialog, &SettingsDialog::okButtonClicked,
+            this, &MainWindow::onOkButtonClicked);
+    connect(settingsDialog, &SettingsDialog::cancelButtonClicked,
+            this, &MainWindow::onCancelButtonClicked);
 }
 
 MainWindow::~MainWindow()
@@ -28,30 +38,13 @@ MainWindow::~MainWindow()
     delete connectWidget;
     delete mainWidget;
     delete centralStackedWidget;
+    delete settingsDialog;
 }
 
 void MainWindow::onConnectButtonClicked() {
     qDebug() << "mainwindow on connect button clicked";
-    client.connect();
-    client.create_tcp_socket();
-    client.open_tcp_socket();
-    client.login();
-    client.open_channel();
-    connectWidget->hideConnectButton();
-    connectWidget->setConnectStatus("Connected!");
 
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this, timer]() {
-        mainWidget->showRequestInputLabel();
-        mainWidget->showRequestInputLineEdit();
-        mainWidget->clearResponseLabel();
-        mainWidget->showSendButton();
-        mainWidget->showDisconnectButton();
-        mainWidget->clearRequestInputLineEdit();
-        centralStackedWidget->setCurrentWidget(mainWidget);
-        timer->deleteLater();
-    });
-    timer->start(500);
+   settingsDialog->exec();
 }
 void MainWindow::onDisconnectButtonClicked() {
     qDebug() << "mainwindow on disconnect button clicked";
@@ -64,9 +57,9 @@ void MainWindow::onDisconnectButtonClicked() {
     mainWidget->hideRequestInputLineEdit();
     mainWidget->setResponseLabel("Disconnected!");
 
+
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
-        //connectWidget
         connectWidget->showConnectButton();
         connectWidget->clearConnectStatus();
         centralStackedWidget->setCurrentWidget(connectWidget);
@@ -97,14 +90,32 @@ void MainWindow::onSendButtonClicked() {
 }
 
 
-// void MainWindow::onSendButtonClicked() {
-//     qDebug() << "sendButton clicked";
+void MainWindow::onOkButtonClicked() {
+    qDebug() << "Mainwindow slot Ok button clicked";
+    client.connect();
+    client.create_tcp_socket();
+    client.open_tcp_socket();
+    client.login();
+    client.open_channel();
 
-// };
+    connectWidget->hideConnectButton();
+    connectWidget->setConnectStatus("Connected!");
+    settingsDialog->hide();
 
-
-
-
-// void MainWindow::onBtnClicked() {
-//     qDebug() << "signal caught" ;
-// }
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this, timer]() {
+        mainWidget->showRequestInputLabel();
+        mainWidget->showRequestInputLineEdit();
+        mainWidget->clearResponseLabel();
+        mainWidget->showSendButton();
+        mainWidget->showDisconnectButton();
+        mainWidget->clearRequestInputLineEdit();
+        centralStackedWidget->setCurrentWidget(mainWidget);
+        timer->deleteLater();
+    });
+    timer->start(500);
+}
+void MainWindow::onCancelButtonClicked() {
+    qDebug() << "MainWindow slot cancel button clicked";
+    settingsDialog->hide();
+}

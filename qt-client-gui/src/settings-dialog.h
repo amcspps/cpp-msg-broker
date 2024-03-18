@@ -15,12 +15,9 @@ class SettingsDialog : public QDialog {
 public:
     SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
-
-private slots:
-    //void onSettingsButtonClicked();
 signals:
-    void signalOkSettingsButtonClicked();
-    void signalCancelSettingsButtonClicked();
+    void okButtonClicked();
+    void cancelButtonClicked();
 private:
     QPushButton *okDialogButton;
     QPushButton *cancelDialogButton;
