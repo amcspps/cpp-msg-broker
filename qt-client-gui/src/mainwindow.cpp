@@ -6,8 +6,6 @@
 #include <QIntValidator>
 #include <QComboBox>
 
-Client& client = Client::get_instance();
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -22,15 +20,19 @@ MainWindow::MainWindow(QWidget *parent)
     centralStackedWidget->addWidget(mainWidget);
 
     connect(connectWidget, &ConnectWidget::connectButtonClicked,
-            this, &MainWindow::onConnectButtonClicked);
+            this, &MainWindow::slotConnectButtonClicked);
+    connect(connectWidget, &ConnectWidget::connectionSuccessful,
+            this, &MainWindow::slotConnectionSuccessful);
+    connect(settingsDialog, &SettingsDialog::okButtonDone,
+            mainWidget, &MainWidget::slotOkButtonDone);
+    connect(settingsDialog, &SettingsDialog::okButtonDone,
+            connectWidget, &ConnectWidget::slotOkButtonDone);
+    connect(settingsDialog, &SettingsDialog::okButtonDone,
+            connectWidget, &ConnectWidget::slotOkButtonDone);
     connect(mainWidget, &MainWidget::disconnectButtonClicked,
-            this, &MainWindow::onDisconnectButtonClicked);
-    connect(mainWidget, &MainWidget::sendButtonClicked,
-            this, &MainWindow::onSendButtonClicked);
-    connect(settingsDialog, &SettingsDialog::okButtonClicked,
-            this, &MainWindow::onOkButtonClicked);
-    connect(settingsDialog, &SettingsDialog::cancelButtonClicked,
-            this, &MainWindow::onCancelButtonClicked);
+            this, &MainWindow::slotDisconnectButtonClicked);
+    connect (mainWidget, &MainWidget::disconnectButtonClicked,
+            connectWidget, &ConnectWidget::slotDisconnectButtonClicked);
 }
 
 MainWindow::~MainWindow()
@@ -41,91 +43,30 @@ MainWindow::~MainWindow()
     delete settingsDialog;
 }
 
-void MainWindow::onConnectButtonClicked() {
+void MainWindow::slotConnectButtonClicked() {
     qDebug() << "mainwindow on connect button clicked";
-
-   settingsDialog->exec();
+    settingsDialog->exec();
 }
-void MainWindow::onDisconnectButtonClicked() {
-    qDebug() << "mainwindow on disconnect button clicked";
-    client.close_channel();
-    client.close_connection();
-    client.disconnect();
-    mainWidget->hideDisconnectButton();
-    mainWidget->hideSendButton();
-    mainWidget->hideRequestInputLabel();
-    mainWidget->hideRequestInputLineEdit();
-    mainWidget->setResponseLabel("Disconnected!");
 
+void MainWindow::slotDisconnectButtonClicked() {
+    qDebug() << "mainwindow slot disconnect b clicked";
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
-        connectWidget->showConnectButton();
-        connectWidget->clearConnectStatus();
         centralStackedWidget->setCurrentWidget(connectWidget);
         timer->deleteLater();
     });
     timer->start(500);
-
 }
 
-void MainWindow::onSendButtonClicked() {
-    qDebug() << "mainwindow on send button clicked";
-     if(mainWidget->getRequestInputLineEditText().isEmpty()) {
-         mainWidget->setResponseLabel("input something");
-     }
-     else {
-         client.create_reply_queue();
-         client.publish_request(mainWidget->getRequestInputLineEditText().toInt());
-         client.set_consumer();
-         auto response = client.process_response();
-         if(!std::get<0>(response)) {
-             mainWidget->setResponseLabel("request timed out, server is down");
-         }
-         else {
-             mainWidget->setResponseLabel(
-                         QString::fromStdString("received from server: " + std::get<1>(response)));
-             std::cout << "response: " << std::get<1>(response) << std::endl;
-         }
-     }
-}
+void MainWindow::slotConnectionSuccessful() {
+    qDebug() << "mainwindow slot conn success";
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this, timer]() {
+        centralStackedWidget->setCurrentWidget(mainWidget);
+        timer->deleteLater();
+    });
+    timer->start(500);
+
+};
 
 
-void MainWindow::onOkButtonClicked() {
-    qDebug() << "Mainwindow slot Ok button clicked";
-    settingsDialog->dumpCfgIni(client.get_cfg_path());
-    try {
-        client.load_cfg();
-        client.connect();
-        client.create_tcp_socket();
-        client.open_tcp_socket();
-        client.login();
-        client.open_channel();
-        connectWidget->hideConnectButton();
-        connectWidget->setConnectStatus("Connected!");
-        settingsDialog->hide();
-
-        QTimer *timer = new QTimer(this);
-        connect(timer, &QTimer::timeout, this, [this, timer]() {
-            mainWidget->showRequestInputLabel();
-            mainWidget->showRequestInputLineEdit();
-            mainWidget->clearResponseLabel();
-            mainWidget->showSendButton();
-            mainWidget->showDisconnectButton();
-            mainWidget->clearRequestInputLineEdit();
-            centralStackedWidget->setCurrentWidget(mainWidget);
-            timer->deleteLater();
-        });
-        timer->start(500);
-    }  catch (...) {
-        connectWidget->setConnectStatus("Some trouble occured :(");
-        settingsDialog->clearHostLineEdit();
-        settingsDialog->clearPortLineEdit();
-        settingsDialog->hide();
-    }
-
-
-}
-void MainWindow::onCancelButtonClicked() {
-    qDebug() << "MainWindow slot cancel button clicked";
-    settingsDialog->hide();
-}

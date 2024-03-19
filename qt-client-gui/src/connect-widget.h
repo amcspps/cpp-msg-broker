@@ -7,18 +7,15 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QIntValidator>
-
 class ConnectWidget : public QWidget {
     Q_OBJECT
 
 public:
     ConnectWidget(QWidget *parent = nullptr);
-    void setConnectStatus(QString status);
-    void hideConnectButton();
-    void showConnectButton();
-    void clearConnectStatus();
     ~ConnectWidget();
-
+public slots:
+    void slotOkButtonDone();
+    void slotDisconnectButtonClicked();
 private:
     QVBoxLayout *widgetVLayout;
     QPushButton *connectButton;
@@ -27,6 +24,7 @@ private:
     QHBoxLayout *hConnectStatusLayout;
 signals:
     void connectButtonClicked();
+    void connectionSuccessful();
 };
 
 

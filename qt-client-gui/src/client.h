@@ -1,3 +1,5 @@
+#ifndef CLIENT_H
+#define CLIENT_H
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,3 +57,4 @@ private:
   amqp_socket_t *m_socket = NULL;
   amqp_bytes_t m_reply_to_queue;
 };
+#endif

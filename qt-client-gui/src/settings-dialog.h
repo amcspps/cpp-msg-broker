@@ -10,34 +10,20 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSettings>
-
-class NoSpaceValidator : public QValidator {
-public:
-    State validate(QString &input, int &pos) const override {
-        if (input.contains(' ')) {
-            return Invalid;
-        }
-        return Acceptable;
-    }
-};
+#include <QRegExpValidator>
 
 class SettingsDialog : public QDialog {
     Q_OBJECT
 public:
     SettingsDialog(QWidget *parent = nullptr);
-    void clearPortLineEdit();
-    void clearHostLineEdit();
-    void clearSettingsStatusLabel();
-    QString getHostLineEditText();
-    int getPortLineEditText();
-    QString getLogText();
     void dumpCfgIni(std::string cfg_path);
     ~SettingsDialog();
 signals:
-    void okButtonClicked();
+    void okButtonDone();
     void cancelButtonClicked();
 public slots:
-    void slotOkButtonClicked();
+    void slotOkButtonDone();
+    void slotCancelButtonClicked();
 private:
     QPushButton *okDialogButton;
     QPushButton *cancelDialogButton;
@@ -55,7 +41,7 @@ private:
     QHBoxLayout *hSettingsStatusLayout;
     QVBoxLayout *verticalDialogLayout;
     QIntValidator *portValidator;
-    NoSpaceValidator *noSpaceValidator;
+    QRegExpValidator * reValidator;
 };
 
 #endif // SETTINGSDIALOG_H

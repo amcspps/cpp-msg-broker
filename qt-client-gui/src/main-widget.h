@@ -13,18 +13,6 @@ class MainWidget : public QWidget {
     Q_OBJECT
 public:
     MainWidget(QWidget *parent = nullptr);
-    void setResponseLabel(QString label);
-    void hideDisconnectButton();
-    void hideSendButton();
-    void hideRequestInputLabel();
-    void hideRequestInputLineEdit();
-    void showRequestInputLineEdit();
-    void showRequestInputLabel();
-    void showSendButton();
-    void showDisconnectButton();
-    void clearResponseLabel();
-    void clearRequestInputLineEdit();
-    QString getRequestInputLineEditText();
     ~MainWidget();
 private:
     QVBoxLayout *widgetVLayout;
@@ -40,10 +28,13 @@ private:
     QHBoxLayout *hRequestInputLineEditLayout;
     QHBoxLayout *hResponseLabelLayout;
     QHBoxLayout *hSendButtonLayout;
-
+public slots:
+    void slotOkButtonDone();
+private slots:
+    void slotDisconnectButtonClicked();
+    void slotSendButtonClicked();
 signals:
     void disconnectButtonClicked();
-    void sendButtonClicked();
 };
 
 

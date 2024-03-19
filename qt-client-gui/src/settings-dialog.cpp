@@ -1,26 +1,29 @@
 #include "settings-dialog.h"
 #include <iostream>
+#include "client.h"
+
+Client& client = Client::get_instance();
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     setWindowFlags(windowFlags() & ~Qt::WindowCloseButtonHint);
     setWindowFlags(windowFlags() | Qt::CustomizeWindowHint);
     portValidator = new QIntValidator();
-    noSpaceValidator = new NoSpaceValidator();
+    QRegExp re("^[^\\d\\s]*$");
+    reValidator = new QRegExpValidator(re);
     okDialogButton = new QPushButton("Ok");
     cancelDialogButton = new QPushButton("Cancel");
 
     hostLabel = new QLabel("host: ");
     portLabel = new QLabel("port: ");
     logLabel = new QLabel("log level: ");
-    settingsStatus = new QLabel("kek-lol");
+    settingsStatus = new QLabel();
     settingsStatus->setAlignment(Qt::AlignCenter);
 
     hostLineEdit = new QLineEdit();
     portLineEdit = new QLineEdit();
 
-    hostLineEdit->setValidator(noSpaceValidator);
+    hostLineEdit->setValidator(reValidator);
     portLineEdit->setValidator(portValidator);
-    portLineEdit->setValidator(noSpaceValidator);
 
     logComboBox = new QComboBox();
     logComboBox->addItem("All");
@@ -58,10 +61,11 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
 
     setLayout(verticalDialogLayout);
 
+
     connect(okDialogButton, &QPushButton::clicked,
-            this, &SettingsDialog::slotOkButtonClicked);
+            this, &SettingsDialog::slotOkButtonDone);
     connect(cancelDialogButton, &QPushButton::clicked,
-            this, &SettingsDialog::cancelButtonClicked);
+            this, &SettingsDialog::slotCancelButtonClicked);
 
 };
 
@@ -82,44 +86,75 @@ SettingsDialog::~SettingsDialog() {
     delete hButtonLayout;
     delete verticalDialogLayout;
     delete portValidator;
+    delete reValidator;
 };
 
-void SettingsDialog::slotOkButtonClicked() {
+void SettingsDialog::slotOkButtonDone() {
     qDebug() << "slot Settings Dialog ok button clicked";
-    emit okButtonClicked();
+    if(!hostLineEdit->text().isEmpty() && !portLineEdit->text().isEmpty()) {
+        dumpCfgIni(client.get_cfg_path());
+        client.load_cfg();
+        hostLineEdit->clear();
+        portLineEdit->clear();
+        settingsStatus->clear();
+        settingsStatus->clear();
+        hide();
+        emit okButtonDone();
+    }
+    else if (hostLineEdit->text().isEmpty() && portLineEdit->text().isEmpty()) {
+        settingsStatus->setText("set parameters");
+    }
+    else if (hostLineEdit->text().isEmpty()) {
+        settingsStatus->setText("set host");
+    }
+    else if (portLineEdit->text().isEmpty()) {
+        settingsStatus->setText("set port");
+    }
 }
 
-
-
-void SettingsDialog::clearHostLineEdit() {
+void SettingsDialog::slotCancelButtonClicked() {
     hostLineEdit->clear();
-}
-
-void SettingsDialog::clearPortLineEdit() {
     portLineEdit->clear();
-}
-
-void SettingsDialog::clearSettingsStatusLabel() {
     settingsStatus->clear();
+    emit cancelButtonClicked();
+    hide();
 }
 
-QString SettingsDialog::getHostLineEditText() {
-    return hostLineEdit->text();
-}
 
-int SettingsDialog::getPortLineEditText() {
-    return portLineEdit->text().toInt();
-}
+// void SettingsDialog::clearHostLineEdit() {
+//     hostLineEdit->clear();
+// }
 
-QString SettingsDialog::getLogText() {
-    return logComboBox->currentText();
-}
+// void SettingsDialog::clearPortLineEdit() {
+//     portLineEdit->clear();
+// }
+
+// void SettingsDialog::clearSettingsStatusLabel() {
+//     settingsStatus->clear();
+// }
+
+// QString SettingsDialog::getHostLineEditText() {
+//     return hostLineEdit->text();
+// }
+
+// int SettingsDialog::getPortLineEditText() {
+//     return portLineEdit->text().toInt();
+// }
+
+// QString SettingsDialog::getLogText() {
+//     return logComboBox->currentText();
+// }
+
+// void SettingsDialog::setSettingsStatus(QString status) {
+//     settingsStatus->setText(status);
+// }
+
 
 void SettingsDialog::dumpCfgIni(std::string cfg_path) {
     QSettings *settingsIni = new QSettings(QString::fromStdString(cfg_path), QSettings::IniFormat);
     settingsIni->beginGroup("client");
-    settingsIni->setValue("host", getHostLineEditText());
-    settingsIni->setValue("port", getPortLineEditText());
+    settingsIni->setValue("host", hostLineEdit->text());
+    settingsIni->setValue("port", portLineEdit->text());
     settingsIni->endGroup();
     delete settingsIni;
     qDebug() << "dumping cfg";

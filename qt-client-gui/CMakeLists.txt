@@ -55,7 +55,7 @@ target_link_libraries(myclient
                       Boost::filesystem
                       )
 
-#target_link_directories(myclient PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq) # trouble with arch, manual library build
+target_link_directories(myclient PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq) # trouble with arch, manual library build
 
 
 include(GNUInstallDirs)

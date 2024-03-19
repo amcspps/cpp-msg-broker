@@ -1,7 +1,5 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
-#include "client.h"
 #include "settings-dialog.h"
 #include "connect-widget.h"
 #include "main-widget.h"
@@ -23,11 +21,10 @@ public:
     ~MainWindow();
 
 public slots:
-    void onConnectButtonClicked();
-    void onDisconnectButtonClicked();
-    void onSendButtonClicked();
-    void onOkButtonClicked();
-    void onCancelButtonClicked();
+    void slotConnectButtonClicked();
+private slots:
+    void slotDisconnectButtonClicked();
+    void slotConnectionSuccessful();
 private:
     QStackedWidget *centralStackedWidget;
     ConnectWidget *connectWidget;

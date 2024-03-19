@@ -1,6 +1,8 @@
 #include "main-widget.h"
 #include <QDebug>
+#include "client.h"
 
+extern Client& client;
 
 MainWidget::MainWidget(QWidget *parent) {
     widgetVLayout = new QVBoxLayout();
@@ -51,8 +53,8 @@ MainWidget::MainWidget(QWidget *parent) {
     widgetVLayout->addStretch();
 
     setLayout(widgetVLayout);
-    connect(disconnectButton, &QPushButton::clicked, this, &MainWidget::disconnectButtonClicked);
-    connect(sendButton, &QPushButton::clicked, this, &MainWidget::sendButtonClicked);
+    connect(disconnectButton, &QPushButton::clicked, this, &MainWidget::slotDisconnectButtonClicked);
+    connect(sendButton, &QPushButton::clicked, this, &MainWidget::slotSendButtonClicked);
 }
 
 MainWidget::~MainWidget() {
@@ -71,53 +73,49 @@ MainWidget::~MainWidget() {
     delete widgetVLayout;
 }
 
-
-void MainWidget::setResponseLabel(QString label) {
-    responseLabel->setText(label);
-}
-
-
-void MainWidget::hideDisconnectButton() {
+void MainWidget::slotDisconnectButtonClicked() {
+    qDebug() << "main widget slot disco butt clicked";
+    client.close_channel();
+    client.close_connection();
+    client.disconnect();
     disconnectButton->hide();
-}
-
-void MainWidget::hideSendButton() {
     sendButton->hide();
-}
-
-void MainWidget::hideRequestInputLabel() {
     requestInputLabel->hide();
-}
-
-void MainWidget::hideRequestInputLineEdit() {
+    requestInputLineEdit->clear();
     requestInputLineEdit->hide();
+    responseLabel->setText("Disconnected!");
+    emit disconnectButtonClicked();
 }
 
-void MainWidget::showRequestInputLabel() {
+
+void MainWidget::slotOkButtonDone() {
+    qDebug() << "main widget slot connect button clicked";
+    disconnectButton->show();
+    sendButton->show();
     requestInputLabel->show();
-}
-
-void MainWidget::showRequestInputLineEdit() {
     requestInputLineEdit->show();
-}
-
-void MainWidget::clearResponseLabel() {
     responseLabel->clear();
 }
 
-void MainWidget::showSendButton() {
-    sendButton->show();
-}
 
-void MainWidget::showDisconnectButton() {
-    disconnectButton->show();
-}
-
-QString MainWidget::getRequestInputLineEditText() {
-    return requestInputLineEdit->text();
-}
-
-void MainWidget::clearRequestInputLineEdit() {
-    requestInputLineEdit->clear();
+void MainWidget::slotSendButtonClicked() {
+    qDebug() << "main widget slot send button clicked";
+    if(requestInputLineEdit->text().isEmpty()) {
+        responseLabel->setText("input something");
+    }
+    else {
+       client.create_reply_queue();
+       client.publish_request(requestInputLineEdit->text().toInt());
+       client.set_consumer();
+       auto response = Client::get_instance().process_response();
+       if(!std::get<0>(response)) {
+            responseLabel->setText("request timed out, server is down");
+       }
+       else {
+            responseLabel->setText(
+                       QString::fromStdString("received from server: " + std::get<1>(response)));
+           //std::cout << "response: " << std::get<1>(response) << std::endl;
+       }
+    }
 }
 
