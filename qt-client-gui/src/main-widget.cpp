@@ -114,7 +114,6 @@ void MainWidget::slotSendButtonClicked() {
        else {
             responseLabel->setText(
                        QString::fromStdString("received from server: " + std::get<1>(response)));
-           //std::cout << "response: " << std::get<1>(response) << std::endl;
        }
     }
 }

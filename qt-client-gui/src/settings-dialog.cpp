@@ -120,36 +120,6 @@ void SettingsDialog::slotCancelButtonClicked() {
     hide();
 }
 
-
-// void SettingsDialog::clearHostLineEdit() {
-//     hostLineEdit->clear();
-// }
-
-// void SettingsDialog::clearPortLineEdit() {
-//     portLineEdit->clear();
-// }
-
-// void SettingsDialog::clearSettingsStatusLabel() {
-//     settingsStatus->clear();
-// }
-
-// QString SettingsDialog::getHostLineEditText() {
-//     return hostLineEdit->text();
-// }
-
-// int SettingsDialog::getPortLineEditText() {
-//     return portLineEdit->text().toInt();
-// }
-
-// QString SettingsDialog::getLogText() {
-//     return logComboBox->currentText();
-// }
-
-// void SettingsDialog::setSettingsStatus(QString status) {
-//     settingsStatus->setText(status);
-// }
-
-
 void SettingsDialog::dumpCfgIni(std::string cfg_path) {
     QSettings *settingsIni = new QSettings(QString::fromStdString(cfg_path), QSettings::IniFormat);
     settingsIni->beginGroup("client");
