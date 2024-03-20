@@ -4,7 +4,6 @@
 #include "utils.hpp"
 #include <boost/program_options.hpp>
 #include <chrono>
-#include <condition_variable>
 
 namespace po = boost::program_options;
 
@@ -22,11 +21,9 @@ public:
     static Server instance = Server();
     return instance;
   }
-  void load_cfg(po::variables_map& vm);
-  void run();
-  ~Server() = default;
-private:
-  Server() = default;
+  std::string get_hostname() {return m_hostname;};
+  int get_port() {return m_port;};
+  std::string get_queuename(){return m_queuename;};
   void connect();
   void create_tcp_socket();
   void open_tcp_socket();
@@ -38,11 +35,15 @@ private:
   void close_channel();
   void close_connection();
   void disconnect();
-
   void set_hostname(std::string hostname);
   void set_port(int port);
   void set_queuename(std::string queuename);
-
+  void load_cfg(po::variables_map& vm);
+  void run();
+  ~Server() = default;
+private:
+  Server() = default;
+  
   std::string m_hostname;
   int m_port, m_status;
   amqp_socket_t *m_socket = NULL;

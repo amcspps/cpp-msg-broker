@@ -15,8 +15,8 @@ add_subdirectory(proto-files)
 
 add_executable(srv "src/main.cpp" "src/utils.cpp" "src/server.cpp")
 
-#enable_testing()
-#add_subdirectory(test)
+enable_testing()
+add_subdirectory(test)
 
 target_link_libraries(srv Message ${PROTOBUF_DEPS} rabbitmq Boost::program_options Boost::filesystem)
 target_link_directories(srv PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq)

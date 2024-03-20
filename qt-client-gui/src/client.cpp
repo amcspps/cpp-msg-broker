@@ -110,8 +110,7 @@ void Client::connect() {
 void Client::create_tcp_socket() {
   m_socket = amqp_tcp_socket_new(m_conn);
   if (!m_socket) {
-      throw std::runtime_error("creating TCP socket");
-    //die("creating TCP socket");
+    throw std::runtime_error("creating TCP socket");
   }
 }
 
@@ -119,7 +118,6 @@ void Client::open_tcp_socket() {
   m_status = amqp_socket_open(m_socket, m_hostname.c_str(), m_port);
   if (m_status) {
       throw std::runtime_error("opening TCP socket");
-    //die("opening TCP socket");
   }
 }
 

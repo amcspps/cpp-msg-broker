@@ -18,7 +18,7 @@ void Server::set_port(int port) {
   m_port = port;
 };
 
-void Server::set_queuename(std::string queuename){
+void Server::set_queuename(std::string queuename) {
   m_queuename = queuename;
 };
 
@@ -41,14 +41,14 @@ void Server::connect() {
 void Server::create_tcp_socket() {
   m_socket = amqp_tcp_socket_new(m_conn);
   if (!m_socket) {
-    die("creating TCP socket");
+    throw std::runtime_error("Error creating TCP socket");
   }
 };
 
 void Server::open_tcp_socket() {
   m_status = amqp_socket_open(m_socket, m_hostname.c_str(), m_port);
   if (m_status) {
-    die("opening TCP socket");
+    throw std::runtime_error("Error opening TCP socket");
   }
 };
 
