@@ -9,6 +9,7 @@ add_executable(
   server-tests.cpp
   ../src/server.cpp
   ../src/utils.cpp
+  ../../qt-client-gui/src/client.cpp
 
 )
 
@@ -18,8 +19,10 @@ target_link_libraries(
   Boost::program_options
   Boost::filesystem
   rabbitmq
+  uuid
+  glog
   Message
 )
-target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.13.0/build/librabbitmq)
+#target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.13.0/build/librabbitmq)
 
 add_test(NAME Server-Tests COMMAND server_tests)

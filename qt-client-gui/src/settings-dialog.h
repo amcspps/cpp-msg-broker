@@ -10,7 +10,21 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSettings>
-#include <QRegExpValidator>
+//#include <QRegExpValidator>
+#include <QValidator>
+
+class NoIntSpcValidator : public QValidator {
+public:
+    State validate(QString &input, int &pos) const override {
+        Q_UNUSED(pos);
+        for (const QChar &ch : input) {
+            if (ch.isDigit() || ch == ' ') {
+                return Invalid;
+            }
+        }
+        return Acceptable;
+    }
+};
 
 class SettingsDialog : public QDialog {
     Q_OBJECT
@@ -41,7 +55,8 @@ private:
     QHBoxLayout *hSettingsStatusLayout;
     QVBoxLayout *verticalDialogLayout;
     QIntValidator *portValidator;
-    QRegExpValidator * reValidator;
+    NoIntSpcValidator * nisValidator;
+    //QRegExpValidator * reValidator;
 };
 
 #endif // SETTINGSDIALOG_H

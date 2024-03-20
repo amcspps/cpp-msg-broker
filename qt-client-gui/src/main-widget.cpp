@@ -107,7 +107,7 @@ void MainWidget::slotSendButtonClicked() {
        client.create_reply_queue();
        client.publish_request(requestInputLineEdit->text().toInt());
        client.set_consumer();
-       auto response = Client::get_instance().process_response();
+       auto response = client.process_response();
        if(!std::get<0>(response)) {
             responseLabel->setText("request timed out, server is down");
        }

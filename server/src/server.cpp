@@ -5,7 +5,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/filesystem.hpp>
-
+#include <glog/logging.h>
 
 namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
@@ -23,33 +23,46 @@ void Server::set_queuename(std::string queuename) {
 };
 
 void Server::load_cfg(po::variables_map& vm) {
-  pt::ptree tree;
-  pt::ini_parser::read_ini(fs::absolute(vm["config"].as<std::string>()).string(), tree); 
-
-  set_hostname(tree.get<std::string>("server.host"));
-  set_port(tree.get<int>("server.port"));
-  set_queuename(tree.get<std::string>("server.queuename"));
+  try {
+    pt::ptree tree;
+    pt::ini_parser::read_ini(fs::absolute(vm["config"].as<std::string>()).string(), tree); 
+    set_hostname(tree.get<std::string>("server.host"));
+    set_port(tree.get<int>("server.port"));
+    set_queuename(tree.get<std::string>("server.queuename"));
+    
+    LOG(INFO) << "load_cfg(po::variables_map& vm): config parsed suceessfully!";
+  }
+  catch(std::exception& ex) {
+    LOG(ERROR) << "load_cfg(po::variables_map& vm): error while parsing. Erorr message:" <<
+               ex.what();
+  }
 }
 
 void Server::connect() {
   m_conn = amqp_new_connection() /*returns NULL or 0*/;
   if (!m_conn) {
     throw std::runtime_error("Connection creation failed");
+    LOG(ERROR) << "Server: Connection creation failed";
   }
+  LOG(INFO) << "Server: connection created";
 };
 
 void Server::create_tcp_socket() {
   m_socket = amqp_tcp_socket_new(m_conn);
   if (!m_socket) {
+    LOG(ERROR) << "Server: Socket creation failed";
     throw std::runtime_error("Error creating TCP socket");
   }
+  LOG(INFO) << "Server: TCP socket created";
 };
 
 void Server::open_tcp_socket() {
   m_status = amqp_socket_open(m_socket, m_hostname.c_str(), m_port);
   if (m_status) {
+    LOG(ERROR) << "Server: Error opening TCP socket";
     throw std::runtime_error("Error opening TCP socket");
   }
+  LOG(INFO) << "Server: TCP socket opened";
 };
 
 void Server::login() {
@@ -119,7 +132,7 @@ void Server::process() {
     response.set_res(request.req()*2); /* response = request * 2*/
     std::string serialized_response;
     if (!response.SerializeToString(&serialized_response)) {
-      fprintf(stderr, "Failed to serialize Protobuf response\n");
+      std::cerr << "Server: response SerializeToString() failed" << std::endl;
     }
     die_on_error(amqp_basic_publish(m_conn, 1, amqp_empty_bytes,
                                     envelope.message.properties.reply_to, 0, 0,

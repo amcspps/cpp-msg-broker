@@ -1,10 +1,9 @@
 #include "../proto-files/message.pb.h"
 #include "../src/server.hpp"
-#include <gtest/gtest.h>
 #include "../../qt-client-gui/src/client.h"
+#include <gtest/gtest.h>
 #include "boost/filesystem.hpp"
-
-
+#include <thread>
 TEST(Server, LoadCfg) {
     Server& server = Server::get_instance();
     EXPECT_EQ(server.get_hostname(), "localhost");
@@ -196,19 +195,41 @@ TEST(Server, Disconnect_NonExistingConn) {
     EXPECT_DEATH(server.disconnect(), ""); 
 }
 
-TEST(Server, xxx) {
+TEST(Server, RPCProcess) {
+    Server& server = Server::get_instance();
+    server.set_hostname("localhost");
+    server.set_port(5672);
+    std::thread server_thread([&server](){server.run();});
+
+    Client& client = Client::get_instance();
+    client.set_hostname("localhost");
+    client.set_port(5672);
+    client.connect();
+    client.create_tcp_socket();
+    client.open_tcp_socket();
+    client.login();
+    client.open_channel();
     
+    std::thread client_thread([&client](){
+        for (int i = 0; i < 1000; i++) {
+        client.create_reply_queue();
+        client.publish_request(i);
+        client.set_consumer();
+        auto response = client.process_response();
+        ASSERT_EQ(std::get<0>(response), true);
+        ASSERT_EQ(std::stoi(std::get<1>(response)), i*2);
+    }
+    });
+
+    server_thread.join();
+    client_thread.join();
+
+    client.close_channel();
+    client.close_connection();
+    client.disconnect();
+
 }
 
-
-// TEST(Server, xxx) {
-    
-// }
-
-
-// TEST(Server, xxx) {
-    
-// }
 
 
 
@@ -229,6 +250,7 @@ int main(int argc, char** argv) {
       return 1;
     }
     Server& server = Server::get_instance();
+    Client& client = Client::get_instance();
     server.load_cfg(vm);
     return RUN_ALL_TESTS();
 }

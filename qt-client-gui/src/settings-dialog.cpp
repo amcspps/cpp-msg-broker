@@ -2,14 +2,17 @@
 #include <iostream>
 #include "client.h"
 
+
+
 Client& client = Client::get_instance();
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     setWindowFlags(windowFlags() & ~Qt::WindowCloseButtonHint);
     setWindowFlags(windowFlags() | Qt::CustomizeWindowHint);
     portValidator = new QIntValidator();
-    QRegExp re("^[^\\d\\s]*$");
-    reValidator = new QRegExpValidator(re);
+    //QRegExp re("^[^\\d\\s]*$");
+    //reValidator = new QRegExpValidator(re);
+    nisValidator = new NoIntSpcValidator();
     okDialogButton = new QPushButton("Ok");
     cancelDialogButton = new QPushButton("Cancel");
 
@@ -22,7 +25,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     hostLineEdit = new QLineEdit();
     portLineEdit = new QLineEdit();
 
-    hostLineEdit->setValidator(reValidator);
+    hostLineEdit->setValidator(nisValidator/*reValidator*/);
     portLineEdit->setValidator(portValidator);
 
     logComboBox = new QComboBox();
@@ -86,7 +89,8 @@ SettingsDialog::~SettingsDialog() {
     delete hButtonLayout;
     delete verticalDialogLayout;
     delete portValidator;
-    delete reValidator;
+    delete nisValidator;
+    //delete reValidator;
 };
 
 void SettingsDialog::slotOkButtonDone() {

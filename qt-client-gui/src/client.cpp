@@ -62,7 +62,7 @@ void Client::publish_request(int num) {
   die_on_error(amqp_basic_publish(m_conn, 1, amqp_empty_bytes,
                                   amqp_cstring_bytes("rpc_queue"), 0, 0,
                                   &props, amqp_cstring_bytes(serialized_request.c_str())),
-                "Publishing");
+              "Publishing");
 
   amqp_bytes_free(props.reply_to);
 }

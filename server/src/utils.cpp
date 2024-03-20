@@ -1,4 +1,4 @@
-// Copyright 2007 - 2021, Alan Antonuk and the rabbitmq-c contributors.
+// Copyright (mostly) 2007 - 2021, Alan Antonuk and the rabbitmq-c contributors.
 // SPDX-License-Identifier: mit
 // + Pavel Popov additions 2024
 
