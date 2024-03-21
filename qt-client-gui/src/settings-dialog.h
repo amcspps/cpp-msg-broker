@@ -10,8 +10,8 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSettings>
-//#include <QRegExpValidator>
 #include <QValidator>
+
 
 class NoIntSpcValidator : public QValidator {
 public:
@@ -56,7 +56,6 @@ private:
     QVBoxLayout *verticalDialogLayout;
     QIntValidator *portValidator;
     NoIntSpcValidator * nisValidator;
-    //QRegExpValidator * reValidator;
 };
 
 #endif // SETTINGSDIALOG_H

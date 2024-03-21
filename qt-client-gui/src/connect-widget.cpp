@@ -37,7 +37,8 @@ ConnectWidget::~ConnectWidget() {
 }
 
 void ConnectWidget::slotOkButtonDone() {
-    qDebug() << "connect widget slot ok button clicked (conn success)";
+    LOG(INFO) << "Qt: ConnectWidget slot ok button clicked (connection success)";
+    //qDebug() << "connect widget slot ok button clicked (conn success)";
     connectButton->hide();
     try {
         client.connect();
@@ -46,10 +47,11 @@ void ConnectWidget::slotOkButtonDone() {
         client.login();
         client.open_channel();
         connectStatus->setText("Connected!");
-
+        LOG(INFO) << "Qt: connection with broker established";
         emit connectionSuccessful();
     }
     catch(...) {
+        LOG(ERROR) << "Qt: connection to broker failed";
         connectStatus->setText("Connection Failed!");
         QTimer *timer = new QTimer();
         connect(timer, &QTimer::timeout, [this, timer]() {
@@ -64,7 +66,8 @@ void ConnectWidget::slotOkButtonDone() {
 }
 
 void ConnectWidget::slotDisconnectButtonClicked() {
-    qDebug() << "connect widget slot disconnect button clicked";
+    LOG(INFO) << "Qt: ConnectWidget slot disconnect button clicked";
+    //qDebug() << "connect widget slot disconnect button clicked";
     connectStatus->clear();
     connectButton->show();
 }

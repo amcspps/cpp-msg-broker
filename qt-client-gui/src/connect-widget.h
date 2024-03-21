@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QIntValidator>
+#include <glog/logging.h>
 class ConnectWidget : public QWidget {
     Q_OBJECT
 

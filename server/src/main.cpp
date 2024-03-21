@@ -9,7 +9,8 @@ auto main(int argc, char const *const *argv) -> int {
     desc.add_options()
       ("help,h", "produce help message")
       ("config,c", po::value<std::string>()->default_value("../src/cfg.ini"), "configuration file")
-      ("log,l", po::value<std::string>()->default_value("../logs"), "log file");
+      ("log,l", po::value<std::string>()->default_value("../log"), "log file");
+
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -18,12 +19,14 @@ auto main(int argc, char const *const *argv) -> int {
       std::cout << desc << std::endl;
       return 1;
     }
+    
+    google::InitGoogleLogging(argv[0]);
+    auto logdir = boost::filesystem::absolute(vm["log"].as<std::string>());
+    google::SetLogDestination(google::GLOG_INFO, (logdir / "INFO_").string().c_str());
+    google::SetLogDestination(google::GLOG_WARNING, (logdir / "WARNING_").string().c_str());
+    google::SetLogDestination(google::GLOG_ERROR, (logdir / "ERROR_").string().c_str());
 
     LOG(INFO) << "Arguments parsed successfully";
-
-    google::InitGoogleLogging(argv[0]);
-    FLAGS_log_dir = boost::filesystem::absolute(vm["log"].as<std::string>()).c_str();
-
 
     Server& s = Server::get_instance();
     s.load_cfg(vm);

@@ -2,7 +2,7 @@
 #include <iostream>
 #include "client.h"
 
-
+extern std::string logdir;
 
 Client& client = Client::get_instance();
 
@@ -10,8 +10,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     setWindowFlags(windowFlags() & ~Qt::WindowCloseButtonHint);
     setWindowFlags(windowFlags() | Qt::CustomizeWindowHint);
     portValidator = new QIntValidator();
-    //QRegExp re("^[^\\d\\s]*$");
-    //reValidator = new QRegExpValidator(re);
     nisValidator = new NoIntSpcValidator();
     okDialogButton = new QPushButton("Ok");
     cancelDialogButton = new QPushButton("Cancel");
@@ -90,11 +88,23 @@ SettingsDialog::~SettingsDialog() {
     delete verticalDialogLayout;
     delete portValidator;
     delete nisValidator;
-    //delete reValidator;
 };
 
 void SettingsDialog::slotOkButtonDone() {
-    qDebug() << "slot Settings Dialog ok button clicked";
+    LOG(INFO) << "Qt: SettingsDialog ok button done";
+    if(logComboBox->currentText() == "Exceptions only") {
+        google::SetLogDestination(google::GLOG_ERROR, (logdir + "/" + "ERROR_").c_str());
+    }
+    else if (logComboBox->currentText() == "All") {
+        google::SetLogDestination(google::GLOG_INFO, (logdir + "/" + "INFO_").c_str());
+    }
+    //switch (logComboBox->currentIndex()) {
+        //case 1:
+            //google::SetLogDestination(google::GLOG_ERROR, "../log/ERROR_");
+        //case 0:
+            //google::SetLogDestination(google::GLOG_INFO, "../log/INFO_");
+    //}
+    //qDebug() << "slot Settings Dialog ok button clicked";
     if(!hostLineEdit->text().isEmpty() && !portLineEdit->text().isEmpty()) {
         dumpCfgIni(client.get_cfg_path());
         client.load_cfg();
@@ -131,7 +141,8 @@ void SettingsDialog::dumpCfgIni(std::string cfg_path) {
     settingsIni->setValue("port", portLineEdit->text());
     settingsIni->endGroup();
     delete settingsIni;
-    qDebug() << "dumping cfg";
+    LOG(INFO) << "Qt: SettingsDialog dumping cfg";
+    //qDebug() << "dumping cfg";
 };
 
 

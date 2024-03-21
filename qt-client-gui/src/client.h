@@ -11,10 +11,11 @@
 
 #include <assert.h>
 
-#include "utils.hpp"
 #include "../proto-files/message.pb.h"
 
 #include <boost/program_options.hpp>
+#include <glog/logging.h>
+
 #include <tuple>
 namespace po = boost::program_options;
 

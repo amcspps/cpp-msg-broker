@@ -15,14 +15,15 @@ add_executable(
 
 target_link_libraries(
   server_tests
-  GTest::gtest GTest::gtest_main
+  GTest::gtest
+  GTest::gtest_main
   Boost::program_options
   Boost::filesystem
   rabbitmq
   uuid
-  glog
+  glog::glog
   Message
 )
-#target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.13.0/build/librabbitmq)
+target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.13.0/build/librabbitmq)
 
 add_test(NAME Server-Tests COMMAND server_tests)

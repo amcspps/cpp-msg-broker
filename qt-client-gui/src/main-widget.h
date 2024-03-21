@@ -8,7 +8,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QIntValidator>
-
+#include <glog/logging.h>
 class MainWidget : public QWidget {
     Q_OBJECT
 public:

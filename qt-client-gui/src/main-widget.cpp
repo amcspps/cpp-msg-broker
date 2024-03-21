@@ -74,7 +74,8 @@ MainWidget::~MainWidget() {
 }
 
 void MainWidget::slotDisconnectButtonClicked() {
-    qDebug() << "main widget slot disco butt clicked";
+    LOG(INFO) << "Qt: MainWidget slot disconnect button clicked";
+    //qDebug() << "main widget slot disco butt clicked";
     client.close_channel();
     client.close_connection();
     client.disconnect();
@@ -89,7 +90,8 @@ void MainWidget::slotDisconnectButtonClicked() {
 
 
 void MainWidget::slotOkButtonDone() {
-    qDebug() << "main widget slot connect button clicked";
+    LOG(INFO) << "Qt: MainWidget slot connect button clicked";
+    //qDebug() << "main widget slot connect button clicked";
     disconnectButton->show();
     sendButton->show();
     requestInputLabel->show();
@@ -99,8 +101,10 @@ void MainWidget::slotOkButtonDone() {
 
 
 void MainWidget::slotSendButtonClicked() {
-    qDebug() << "main widget slot send button clicked";
+    LOG(INFO) << "Qt: MainWidget slot send button clicked";
+    //qDebug() << "main widget slot send button clicked";
     if(requestInputLineEdit->text().isEmpty()) {
+        LOG(ERROR) << "Qt: No number input provided";
         responseLabel->setText("input something");
     }
     else {
@@ -109,11 +113,13 @@ void MainWidget::slotSendButtonClicked() {
        client.set_consumer();
        auto response = client.process_response();
        if(!std::get<0>(response)) {
+            LOG(ERROR) << "Qt: no response from server";
             responseLabel->setText("request timed out, server is down");
        }
        else {
             responseLabel->setText(
                        QString::fromStdString("received from server: " + std::get<1>(response)));
+            LOG(INFO) << "Qt: got response from server";
        }
     }
 }

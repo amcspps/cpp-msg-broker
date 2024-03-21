@@ -11,6 +11,8 @@
 #include <QIntValidator>
 #include <QDialog>
 #include <QStackedWidget>
+#include <glog/logging.h>
+
 
 class MainWindow : public QMainWindow
 {
