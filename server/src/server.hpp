@@ -20,9 +20,10 @@ public:
     static Server instance = Server();
     return instance;
   }
-  std::string get_hostname() {return m_hostname;};
-  int get_port() {return m_port;};
-  std::string get_queuename(){return m_queuename;};
+  std::string get_log_level();
+  std::string get_hostname();
+  int get_port();
+  std::string get_queuename();
   void connect();
   void create_tcp_socket();
   void open_tcp_socket();
@@ -37,6 +38,7 @@ public:
   void set_hostname(std::string hostname);
   void set_port(int port);
   void set_queuename(std::string queuename);
+  void set_log_level(std::string& lvl);
   void load_cfg(po::variables_map& vm);
   void run();
   ~Server() = default;
@@ -48,6 +50,7 @@ private:
   amqp_socket_t *m_socket = NULL;
   amqp_connection_state_t m_conn;
   std::string m_queuename;
+  std::string m_log_level;
 };
 
 

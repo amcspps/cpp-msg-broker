@@ -9,3 +9,5 @@ build-*
 client
 qt-client-gui/proto-files/message.pb.*
 */logs
+qt-client-gui/log/*
+server/log/*

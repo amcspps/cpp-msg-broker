@@ -23,7 +23,6 @@ auto main(int argc, char const *const *argv) -> int {
     google::InitGoogleLogging(argv[0]);
     auto logdir = boost::filesystem::absolute(vm["log"].as<std::string>());
     google::SetLogDestination(google::GLOG_INFO, (logdir / "INFO_").string().c_str());
-    google::SetLogDestination(google::GLOG_WARNING, (logdir / "WARNING_").string().c_str());
     google::SetLogDestination(google::GLOG_ERROR, (logdir / "ERROR_").string().c_str());
 
     LOG(INFO) << "Arguments parsed successfully";

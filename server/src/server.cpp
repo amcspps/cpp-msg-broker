@@ -10,6 +10,28 @@
 namespace pt = boost::property_tree;
 namespace fs = boost::filesystem;
 
+
+std::string Server::get_log_level() {
+  return m_log_level;
+};
+void Server::set_log_level(std::string& lvl) {
+  m_log_level = lvl;
+};
+
+
+std::string Server::get_hostname() {
+  return m_hostname;
+};
+
+int Server::get_port() {
+  return m_port;
+};
+
+std::string Server::get_queuename() {
+  return m_queuename;
+};
+
+
 void Server::set_hostname(std::string hostname) {
   m_hostname = hostname;
 };
@@ -144,7 +166,7 @@ void Server::process() {
     response.set_res(request.req()*2); /* response = request * 2*/
     std::string serialized_response;
     if (!response.SerializeToString(&serialized_response)) {
-      LOG(WARNING) << "Server: response SerializeToString() failed";
+      LOG(ERROR) << "Server: response SerializeToString() failed";
     }
     die_on_error(amqp_basic_publish(m_conn, 1, amqp_empty_bytes,
                                     envelope.message.properties.reply_to, 0, 0,
