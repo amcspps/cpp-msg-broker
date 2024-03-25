@@ -4,20 +4,21 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include <boost/filesystem.hpp>
+//#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <glog/logging.h>
 
 namespace pt = boost::property_tree;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
 
-std::string Server::get_log_level() {
-  return m_log_level;
-};
-void Server::set_log_level(std::string& lvl) {
-  m_log_level = lvl;
+std::string Server::get_log_lvl() {
+  return m_log_lvl;
 };
 
+std::string Server::get_log_dir() {
+  return m_log_dir;
+}
 
 std::string Server::get_hostname() {
   return m_hostname;
@@ -25,10 +26,6 @@ std::string Server::get_hostname() {
 
 int Server::get_port() {
   return m_port;
-};
-
-std::string Server::get_queuename() {
-  return m_queuename;
 };
 
 
@@ -40,9 +37,14 @@ void Server::set_port(int port) {
   m_port = port;
 };
 
-void Server::set_queuename(std::string queuename) {
-  m_queuename = queuename;
+void Server::set_log_lvl(std::string log_lvl) {
+  m_log_lvl = log_lvl;
 };
+
+void Server::set_log_dir(std::string log_dir) {
+  m_log_dir = fs::absolute(log_dir).string();
+};
+
 
 void Server::load_cfg(po::variables_map& vm) {
   try {
@@ -50,13 +52,29 @@ void Server::load_cfg(po::variables_map& vm) {
     pt::ini_parser::read_ini(fs::absolute(vm["config"].as<std::string>()).string(), tree); 
     set_hostname(tree.get<std::string>("server.host"));
     set_port(tree.get<int>("server.port"));
-    set_queuename(tree.get<std::string>("server.queuename"));
-    
-    LOG(INFO) << "Server: config parsed suceessfully!";
+    set_log_dir(tree.get<std::string>("server.log_dir"));
+    set_log_lvl(tree.get<std::string>("server.log_lvl"));
   }
   catch(std::exception& ex) {
-    LOG(ERROR) << "Server: error while parsing cfg. Erorr message:" <<
-               ex.what();
+    std::cout << "Server: error while parsing cfg:" << ex.what() << std::endl;
+  }
+}
+
+void Server::start_logging() {
+  auto log_dir = fs::path(m_log_dir);
+  if (!fs::exists(log_dir)) {
+    fs::create_directories(log_dir);
+  }
+
+  if(m_log_lvl == "INFO") {
+    google::SetLogDestination(google::GLOG_INFO, (log_dir / "INFO_").c_str());
+  }
+  else if (m_log_lvl == "ERROR") {
+    google::SetLogDestination(google::GLOG_ERROR, (log_dir / "ERROR_").c_str());
+  }
+  else {
+    google::SetLogDestination(google::GLOG_INFO, (log_dir / "INFO_").c_str());
+    LOG(INFO) << "Unknown log lvl. Default: INFO";
   }
 }
 
@@ -102,13 +120,13 @@ void Server::open_channel() {
 
 void Server::declare_queue() {
     amqp_queue_declare_ok_t *r = amqp_queue_declare(
-        m_conn, 1, amqp_cstring_bytes(m_queuename.c_str()), 0, 0, 0, 1, amqp_empty_table);
+        m_conn, 1, amqp_cstring_bytes(m_queuename), 0, 0, 0, 1, amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(m_conn), "Declaring queue");
     LOG(INFO) << "Server: queue rpc_queue declared";
 };
 
 void Server::set_queue_listener() {
-  amqp_basic_consume(m_conn, 1, amqp_cstring_bytes(m_queuename.c_str()), amqp_empty_bytes,
+  amqp_basic_consume(m_conn, 1, amqp_cstring_bytes(m_queuename), amqp_empty_bytes,
                        0, 0, 0, amqp_empty_table);
   die_on_amqp_error(amqp_get_rpc_reply(m_conn), "Consuming");
   LOG(INFO) << "Server: queue listener set";
@@ -152,7 +170,6 @@ void Server::process() {
 
     TestTask::Messages::Request request;
     request.ParseFromString(std::string((const char*)envelope.message.body.bytes));
-    //std::cout << "received from client: " << request.req() << std::endl;
     
     LOG(INFO) << "Server: received from client:" << request.req();
     

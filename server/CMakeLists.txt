@@ -27,5 +27,5 @@ target_link_libraries(srv PUBLIC
                       Boost::program_options
                       Boost::filesystem
                      )
-target_link_directories(srv PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq)
+#target_link_directories(srv PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq)
 

@@ -2,13 +2,17 @@
 #include "../src/server.hpp"
 #include "../../qt-client-gui/src/client.h"
 #include <gtest/gtest.h>
-#include "boost/filesystem.hpp"
+#include <filesystem>
 #include <thread>
+
+namespace fs = std::filesystem;
+
 TEST(Server, LoadCfg) {
     Server& server = Server::get_instance();
     EXPECT_EQ(server.get_hostname(), "localhost");
     EXPECT_EQ(server.get_port(), 5672);
-    EXPECT_EQ(server.get_queuename(), "rpc_queue");
+    EXPECT_EQ(server.get_log_dir(), fs::absolute("../log").string());
+    EXPECT_EQ(server.get_log_lvl(), "INFO");
 }
 
 TEST(Server, Connect) {
@@ -230,17 +234,14 @@ TEST(Server, RPCProcess) {
 
 }
 
-
-
-
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
-    boost::filesystem::path currentPath = boost::filesystem::current_path();
+    fs::path currentPath = fs::current_path();
     std::cout << currentPath.string() <<std::endl;
     po::options_description desc("Allowed options");
     desc.add_options()
       ("help,h", "produce help message")
-      ("config,c", po::value<std::string>()->default_value("../../src/cfg.ini"), "configuration file");
+      ("config,c", po::value<std::string>()->default_value("../../src/for-test-cfg.ini"), "configuration file");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);

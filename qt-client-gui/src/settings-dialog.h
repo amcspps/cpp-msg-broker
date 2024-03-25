@@ -43,19 +43,22 @@ private:
     QPushButton *cancelDialogButton;
     QLabel *hostLabel;
     QLabel *portLabel;
+    QLabel *logdirLabel;
     QLabel *logLabel;
     QLabel *settingsStatus;
     QLineEdit *hostLineEdit;
     QLineEdit *portLineEdit;
+    QLineEdit *logdirLineEdit;
     QComboBox *logComboBox;
     QHBoxLayout *hHostLayout;
     QHBoxLayout *hPortLayout;
+    QHBoxLayout *hLogDirLayout;
     QHBoxLayout *hLogLayout;
     QHBoxLayout *hButtonLayout;
     QHBoxLayout *hSettingsStatusLayout;
     QVBoxLayout *verticalDialogLayout;
     QIntValidator *portValidator;
-    NoIntSpcValidator * nisValidator;
+    NoIntSpcValidator *nisValidator;
 };
 
 #endif // SETTINGSDIALOG_H

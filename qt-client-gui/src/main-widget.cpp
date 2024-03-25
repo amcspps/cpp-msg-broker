@@ -75,7 +75,6 @@ MainWidget::~MainWidget() {
 
 void MainWidget::slotDisconnectButtonClicked() {
     LOG(INFO) << "Qt: MainWidget slot disconnect button clicked";
-    //qDebug() << "main widget slot disco butt clicked";
     client.close_channel();
     client.close_connection();
     client.disconnect();
@@ -91,7 +90,6 @@ void MainWidget::slotDisconnectButtonClicked() {
 
 void MainWidget::slotOkButtonDone() {
     LOG(INFO) << "Qt: MainWidget slot connect button clicked";
-    //qDebug() << "main widget slot connect button clicked";
     disconnectButton->show();
     sendButton->show();
     requestInputLabel->show();
@@ -102,7 +100,6 @@ void MainWidget::slotOkButtonDone() {
 
 void MainWidget::slotSendButtonClicked() {
     LOG(INFO) << "Qt: MainWidget slot send button clicked";
-    //qDebug() << "main widget slot send button clicked";
     if(requestInputLineEdit->text().isEmpty()) {
         LOG(ERROR) << "Qt: No number input provided";
         responseLabel->setText("input something");

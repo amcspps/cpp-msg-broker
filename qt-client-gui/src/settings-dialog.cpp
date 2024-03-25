@@ -2,8 +2,6 @@
 #include <iostream>
 #include "client.h"
 
-extern std::string logdir;
-
 Client& client = Client::get_instance();
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
@@ -16,19 +14,22 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
 
     hostLabel = new QLabel("host: ");
     portLabel = new QLabel("port: ");
+    logdirLabel = new QLabel("logdir: ");
     logLabel = new QLabel("log level: ");
     settingsStatus = new QLabel();
     settingsStatus->setAlignment(Qt::AlignCenter);
 
     hostLineEdit = new QLineEdit();
     portLineEdit = new QLineEdit();
+    logdirLineEdit = new QLineEdit();
+    logdirLineEdit->setText("../log");
 
-    hostLineEdit->setValidator(nisValidator/*reValidator*/);
+    hostLineEdit->setValidator(nisValidator);
     portLineEdit->setValidator(portValidator);
 
     logComboBox = new QComboBox();
-    logComboBox->addItem("All");
-    logComboBox->addItem("Exceptions only");
+    logComboBox->addItem("INFO");
+    logComboBox->addItem("ERROR");
 
     hHostLayout = new QHBoxLayout();
     hHostLayout->addWidget(hostLabel);
@@ -37,6 +38,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     hPortLayout = new QHBoxLayout();
     hPortLayout->addWidget(portLabel);
     hPortLayout->addWidget(portLineEdit);
+
+    hLogDirLayout = new QHBoxLayout();
+    hLogDirLayout->addWidget(logdirLabel);
+    hLogDirLayout->addWidget(logdirLineEdit);
 
     hLogLayout = new QHBoxLayout();
     hLogLayout->addWidget(logLabel);
@@ -55,6 +60,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
 
     verticalDialogLayout->addLayout(hHostLayout);
     verticalDialogLayout->addLayout(hPortLayout);
+    verticalDialogLayout->addLayout(hLogDirLayout);
     verticalDialogLayout->addLayout(hLogLayout);
     verticalDialogLayout->addLayout(hSettingsStatusLayout);
     verticalDialogLayout->addLayout(hButtonLayout);
@@ -76,12 +82,15 @@ SettingsDialog::~SettingsDialog() {
     delete cancelDialogButton;
     delete hostLabel;
     delete portLabel;
+    delete logdirLabel;
     delete logLabel;
     delete hostLineEdit;
     delete portLineEdit;
+    delete logdirLineEdit;
     delete logComboBox;
     delete hHostLayout;
     delete hPortLayout;
+    delete hLogDirLayout;
     delete hLogLayout;
     delete hSettingsStatusLayout;
     delete hButtonLayout;
@@ -91,38 +100,21 @@ SettingsDialog::~SettingsDialog() {
 };
 
 void SettingsDialog::slotOkButtonDone() {
-    LOG(INFO) << "Qt: SettingsDialog ok button done";
-    if(logComboBox->currentText() == "Exceptions only") {
-        google::SetLogDestination(google::GLOG_ERROR, (logdir + "/" + "ERROR_").c_str());
-    }
-    else if (logComboBox->currentText() == "All") {
-        google::SetLogDestination(google::GLOG_INFO, (logdir + "/" + "INFO_").c_str());
-    }
-    //switch (logComboBox->currentIndex()) {
-        //case 1:
-            //google::SetLogDestination(google::GLOG_ERROR, "../log/ERROR_");
-        //case 0:
-            //google::SetLogDestination(google::GLOG_INFO, "../log/INFO_");
-    //}
-    //qDebug() << "slot Settings Dialog ok button clicked";
-    if(!hostLineEdit->text().isEmpty() && !portLineEdit->text().isEmpty()) {
+    if(!hostLineEdit->text().isEmpty() &&
+       !portLineEdit->text().isEmpty() && !logdirLineEdit->text().isEmpty()) {
         dumpCfgIni(client.get_cfg_path());
         client.load_cfg();
+        client.start_logging();
         hostLineEdit->clear();
         portLineEdit->clear();
-        settingsStatus->clear();
+        logdirLineEdit->setText("../log");
         settingsStatus->clear();
         hide();
+        LOG(INFO) << "Qt: SettingsDialog ok button done";
         emit okButtonDone();
     }
-    else if (hostLineEdit->text().isEmpty() && portLineEdit->text().isEmpty()) {
-        settingsStatus->setText("set parameters");
-    }
-    else if (hostLineEdit->text().isEmpty()) {
-        settingsStatus->setText("set host");
-    }
-    else if (portLineEdit->text().isEmpty()) {
-        settingsStatus->setText("set port");
+    else {
+        settingsStatus->setText("set valid parameters");
     }
 }
 
@@ -139,6 +131,8 @@ void SettingsDialog::dumpCfgIni(std::string cfg_path) {
     settingsIni->beginGroup("client");
     settingsIni->setValue("host", hostLineEdit->text());
     settingsIni->setValue("port", portLineEdit->text());
+    settingsIni->setValue("log_dir", logdirLineEdit->text());
+    settingsIni->setValue("log_lvl", logComboBox->currentText());
     settingsIni->endGroup();
     delete settingsIni;
     LOG(INFO) << "Qt: SettingsDialog dumping cfg";

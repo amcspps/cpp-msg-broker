@@ -4,6 +4,8 @@ find_package(GTest REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options filesystem)
 include_directories(${GTEST_INCLUDE_DIRS})
 
+#set(CMAKE_CXX_STANDARD 17 REQUIRED)
+
 add_executable(
   server_tests
   server-tests.cpp
@@ -24,6 +26,6 @@ target_link_libraries(
   glog::glog
   Message
 )
-target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.13.0/build/librabbitmq)
+#target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.13.0/build/librabbitmq)
 
 add_test(NAME Server-Tests COMMAND server_tests)

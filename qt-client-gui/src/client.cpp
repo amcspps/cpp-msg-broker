@@ -2,12 +2,42 @@
 #include "utils.hpp"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 namespace po = boost::program_options;
 namespace pt = boost::property_tree;
-namespace fs = boost::filesystem;
+namespace fs = std::filesystem;
 
+
+void Client::start_logging() {
+    auto log_dir = fs::path(m_log_dir);
+    if (!fs::exists(log_dir)) {
+        fs::create_directories(log_dir);
+    }
+
+    if(m_log_lvl == "INFO") {
+        google::SetLogDestination(google::GLOG_INFO, (log_dir / "INFO_").c_str());
+    }
+    else if (m_log_lvl == "ERROR") {
+        google::SetLogDestination(google::GLOG_ERROR, (log_dir / "ERROR_").c_str());
+    }
+    else {
+        google::SetLogDestination(google::GLOG_INFO, (log_dir / "INFO_").c_str());
+        LOG(INFO) << "Unknown log lvl. Default: INFO";
+    }
+}
+
+std::string Client::get_log_dir() {
+    return m_log_dir;
+};
+
+void Client::set_log_dir(std::string log_dir) {
+    m_log_dir = fs::absolute(log_dir).string();
+};
+
+void Client::set_log_lvl(std::string log_lvl) {
+    m_log_lvl = log_lvl;
+};
 
 void Client::set_hostname(std::string hostname) {
   m_hostname = hostname;
@@ -23,6 +53,8 @@ void Client::load_cfg() {
         pt::ini_parser::read_ini(fs::absolute(m_cfg_path).string(), tree);
         set_hostname(tree.get<std::string>("client.host"));
         set_port(tree.get<int>("client.port"));
+        set_log_dir(tree.get<std::string>("client.log_dir"));
+        set_log_lvl(tree.get<std::string>("client.log_lvl"));
         LOG(INFO) << "Client: config parsed successfully!";
     }
     catch (std::exception& ex) {
