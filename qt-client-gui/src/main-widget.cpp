@@ -2,7 +2,9 @@
 #include <QDebug>
 #include "client.h"
 
+
 extern Client& client;
+
 
 MainWidget::MainWidget(QWidget *parent) {
     widgetVLayout = new QVBoxLayout();
@@ -87,7 +89,6 @@ void MainWidget::slotDisconnectButtonClicked() {
     emit disconnectButtonClicked();
 }
 
-
 void MainWidget::slotOkButtonDone() {
     LOG(INFO) << "Qt: MainWidget slot connect button clicked";
     disconnectButton->show();
@@ -96,7 +97,6 @@ void MainWidget::slotOkButtonDone() {
     requestInputLineEdit->show();
     responseLabel->clear();
 }
-
 
 void MainWidget::slotSendButtonClicked() {
     LOG(INFO) << "Qt: MainWidget slot send button clicked";
@@ -120,4 +120,3 @@ void MainWidget::slotSendButtonClicked() {
        }
     }
 }
-

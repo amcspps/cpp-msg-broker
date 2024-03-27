@@ -20,11 +20,7 @@ public:
     static Server instance = Server();
     return instance;
   }
-  std::string get_log_lvl();
-  std::string get_log_dir();
-  std::string get_hostname();
-  int get_port();
-
+  
   void connect();
   void create_tcp_socket();
   void open_tcp_socket();
@@ -37,6 +33,11 @@ public:
   void close_connection();
   void disconnect();
   void run();
+
+  std::string get_log_lvl();
+  std::string get_log_dir();
+  std::string get_hostname();
+  int get_port();
 
   void set_hostname(std::string hostname);
   void set_port(int port);

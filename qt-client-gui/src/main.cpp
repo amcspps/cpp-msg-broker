@@ -2,6 +2,7 @@
 #include "client.h"
 #include <QApplication>
 
+
 int main(int argc, char *argv[]) {
   try {
     po::options_description desc("Allowed options");

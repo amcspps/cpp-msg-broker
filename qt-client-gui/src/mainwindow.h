@@ -1,5 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
+
 #include "settings-dialog.h"
 #include "connect-widget.h"
 #include "main-widget.h"
@@ -33,4 +35,6 @@ private:
     MainWidget *mainWidget;
     SettingsDialog *settingsDialog;
 };
+
+
 #endif // MAINWINDOW_H

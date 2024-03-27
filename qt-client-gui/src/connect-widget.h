@@ -1,12 +1,15 @@
 #ifndef CONNECTLAYOUT_H
 #define CONNECTLAYOUT_H
 
+
 #include <QObject>
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QLabel>
 #include <QLineEdit>
 #include <glog/logging.h>
+
+
 class ConnectWidget : public QWidget {
     Q_OBJECT
 

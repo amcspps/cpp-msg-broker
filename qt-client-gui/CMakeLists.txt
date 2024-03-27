@@ -18,9 +18,6 @@ add_subdirectory(proto-files)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/proto-files)
 
-#enable_testing()
-#add_subdirectory(test)
-
 set(PROJECT_SOURCES
         src/client.cpp
         src/client.h
@@ -56,7 +53,7 @@ target_link_libraries(myclient
                       rabbitmq
                       Boost::program_options 
                       Boost::filesystem
-                      )
+)
 
 #target_link_directories(myclient PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq) # trouble with arch, manual library build
 

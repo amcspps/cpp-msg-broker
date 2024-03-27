@@ -2,7 +2,9 @@
 #include <iostream>
 #include "client.h"
 
+
 Client& client = Client::get_instance();
+
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     setWindowFlags(windowFlags() & ~Qt::WindowCloseButtonHint);
@@ -53,11 +55,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
 
 
     hSettingsStatusLayout = new QHBoxLayout();
-
     hSettingsStatusLayout->addWidget(settingsStatus);
 
     verticalDialogLayout = new QVBoxLayout();
-
     verticalDialogLayout->addLayout(hHostLayout);
     verticalDialogLayout->addLayout(hPortLayout);
     verticalDialogLayout->addLayout(hLogDirLayout);
@@ -65,17 +65,14 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent) {
     verticalDialogLayout->addLayout(hSettingsStatusLayout);
     verticalDialogLayout->addLayout(hButtonLayout);
 
-
     setLayout(verticalDialogLayout);
-
 
     connect(okDialogButton, &QPushButton::clicked,
             this, &SettingsDialog::slotOkButtonDone);
     connect(cancelDialogButton, &QPushButton::clicked,
             this, &SettingsDialog::slotCancelButtonClicked);
 
-};
-
+}
 
 SettingsDialog::~SettingsDialog() {
     delete okDialogButton;
@@ -88,6 +85,7 @@ SettingsDialog::~SettingsDialog() {
     delete portLineEdit;
     delete logdirLineEdit;
     delete logComboBox;
+    delete settingsStatus;
     delete hHostLayout;
     delete hPortLayout;
     delete hLogDirLayout;
@@ -97,7 +95,7 @@ SettingsDialog::~SettingsDialog() {
     delete verticalDialogLayout;
     delete portValidator;
     delete nisValidator;
-};
+}
 
 void SettingsDialog::slotOkButtonDone() {
     if(!hostLineEdit->text().isEmpty() &&
@@ -136,8 +134,4 @@ void SettingsDialog::dumpCfgIni(std::string cfg_path) {
     settingsIni->endGroup();
     delete settingsIni;
     LOG(INFO) << "Qt: SettingsDialog dumping cfg";
-    //qDebug() << "dumping cfg";
-};
-
-
-
+}

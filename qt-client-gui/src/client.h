@@ -1,19 +1,18 @@
 #ifndef CLIENT_H
 #define CLIENT_H
-#include <uuid/uuid.h>
 
+
+#include <uuid/uuid.h>
 #include <rabbitmq-c/amqp.h>
 #include <rabbitmq-c/tcp_socket.h>
-
-#include <assert.h>
-
 #include "../proto-files/message.pb.h"
-
 #include <boost/program_options.hpp>
 #include <glog/logging.h>
-
 #include <tuple>
+
+
 namespace po = boost::program_options;
+
 
 class Client {
 public:
@@ -28,13 +27,6 @@ public:
   void start_logging();
   void load_cfg(po::variables_map& vm);
   void load_cfg();
-  std::string get_log_dir();
-  void set_cfg_path(po::variables_map& vm);
-  void set_hostname(std::string hostname);
-  void set_port(int port);
-  void set_log_dir(std::string log_dir);
-  void set_log_lvl(std::string log_lvl);
-  std::string get_cfg_path();
   void connect();
   void create_tcp_socket();
   void open_tcp_socket();
@@ -48,6 +40,15 @@ public:
   void close_connection();
   void disconnect();
   ~Client() = default;
+
+  std::string get_log_dir();
+  std::string get_cfg_path();
+
+  void set_cfg_path(po::variables_map& vm);
+  void set_hostname(std::string hostname);
+  void set_port(int port);
+  void set_log_dir(std::string log_dir);
+  void set_log_lvl(std::string log_lvl);
 private:
   Client() = default;
 
@@ -57,4 +58,6 @@ private:
   amqp_socket_t *m_socket = NULL;
   amqp_bytes_t m_reply_to_queue;
 };
+
+
 #endif

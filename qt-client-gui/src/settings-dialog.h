@@ -1,6 +1,7 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+
 #include <QDialog>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -60,5 +61,6 @@ private:
     QIntValidator *portValidator;
     NoIntSpcValidator *nisValidator;
 };
+
 
 #endif // SETTINGSDIALOG_H

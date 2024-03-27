@@ -1,6 +1,7 @@
 #ifndef MainWidget_H
 #define MainWidget_H
 
+
 #include <QObject>
 #include <QWidget>
 #include <QVBoxLayout>
@@ -9,6 +10,8 @@
 #include <QLineEdit>
 #include <QIntValidator>
 #include <glog/logging.h>
+
+
 class MainWidget : public QWidget {
     Q_OBJECT
 public:
@@ -36,8 +39,6 @@ private slots:
 signals:
     void disconnectButtonClicked();
 };
-
-
 
 
 #endif // MainWidget_H

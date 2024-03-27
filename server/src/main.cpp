@@ -2,6 +2,7 @@
 #include <iostream>
 #include <boost/program_options.hpp>
 
+
 auto main(int argc, char const *const *argv) -> int {
   try {
     po::options_description desc("Allowed options");

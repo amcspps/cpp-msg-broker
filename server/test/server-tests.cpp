@@ -5,7 +5,9 @@
 #include <filesystem>
 #include <thread>
 
+
 namespace fs = std::filesystem;
+
 
 TEST(Server, LoadCfg) {
     Server& server = Server::get_instance();
@@ -67,7 +69,6 @@ TEST(Server, OpenTCPSocket_InvalidCredentials) {
     
 }
 
-
 TEST(Server, Login) {
     Server& server = Server::get_instance();
     server.set_hostname("localhost");
@@ -94,7 +95,6 @@ TEST(Server, OpenChannel) {
     server.disconnect();
 }
 
-
 TEST(Server, OpenChannel_NoLogin) {
     Server& server = Server::get_instance();
     server.set_hostname("localhost");
@@ -105,7 +105,6 @@ TEST(Server, OpenChannel_NoLogin) {
     EXPECT_THROW(server.open_channel(), std::runtime_error);
     server.disconnect();
 }
-
 
 TEST(Server, DeclareQueue) {
     Server& server = Server::get_instance();
@@ -177,7 +176,6 @@ TEST(Server, CloseConnection) {
     server.disconnect();
 }
 
-
 TEST(Server, CloseUnauthorizedConnection) {
     Server& server = Server::get_instance();
     server.set_hostname("localhost");
@@ -188,6 +186,7 @@ TEST(Server, CloseUnauthorizedConnection) {
     EXPECT_THROW(server.close_connection(), std::runtime_error);
     server.disconnect();
 }
+
 TEST(Server, Disconnect) {
     Server& server = Server::get_instance();
     server.connect();

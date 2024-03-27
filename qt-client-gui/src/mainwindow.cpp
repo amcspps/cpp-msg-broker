@@ -6,6 +6,7 @@
 #include <QIntValidator>
 #include <QComboBox>
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -45,13 +46,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::slotConnectButtonClicked() {
     LOG(INFO) << "Qt: MainWindow connect button clicked";
-    //qDebug() << "mainwindow on connect button clicked";
     settingsDialog->exec();
 }
 
 void MainWindow::slotDisconnectButtonClicked() {
     LOG(INFO) << "Qt: MainWindow slot disconnect button clicked";
-    //qDebug() << "mainwindow slot disconnect b clicked";
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
         centralStackedWidget->setCurrentWidget(connectWidget);
@@ -62,7 +61,6 @@ void MainWindow::slotDisconnectButtonClicked() {
 
 void MainWindow::slotConnectionSuccessful() {
     LOG(INFO) << "Qt: MainWindow slot connection successful";
-    //qDebug() << "mainwindow slot conn success";
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [this, timer]() {
         centralStackedWidget->setCurrentWidget(mainWidget);
@@ -70,6 +68,4 @@ void MainWindow::slotConnectionSuccessful() {
     });
     timer->start(500);
 
-};
-
-
+}

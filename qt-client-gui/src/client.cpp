@@ -4,6 +4,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <filesystem>
 
+
 namespace po = boost::program_options;
 namespace pt = boost::property_tree;
 namespace fs = std::filesystem;
@@ -29,23 +30,23 @@ void Client::start_logging() {
 
 std::string Client::get_log_dir() {
     return m_log_dir;
-};
+}
 
 void Client::set_log_dir(std::string log_dir) {
     m_log_dir = fs::absolute(log_dir).string();
-};
+}
 
 void Client::set_log_lvl(std::string log_lvl) {
     m_log_lvl = log_lvl;
-};
+}
 
 void Client::set_hostname(std::string hostname) {
   m_hostname = hostname;
-};
+}
 
 void Client::set_port(int port) {
   m_port = port;
-};
+}
 
 void Client::load_cfg() {
     try {
@@ -61,6 +62,7 @@ void Client::load_cfg() {
         LOG(ERROR) << "Client: error while parsing cfg. Error message: " << ex.what();
     }
 }
+
 void Client::load_cfg(po::variables_map& vm) {
     try{
         pt::ptree tree;
@@ -72,6 +74,7 @@ void Client::load_cfg(po::variables_map& vm) {
         LOG(ERROR) << "Client: error while parsing cfg. Error message: " << ex.what();
     }
 }
+
 void Client::publish_request(int num) {
   uuid_t uuid;
   char uuid_str[37];  

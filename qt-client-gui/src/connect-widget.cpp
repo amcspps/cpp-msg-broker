@@ -2,7 +2,11 @@
 #include <QDebug>
 #include <QTimer>
 #include "client.h"
+
+
 extern Client& client;
+
+
 ConnectWidget::ConnectWidget(QWidget *parent) {
     widgetVLayout = new QVBoxLayout();
     connectButton = new QPushButton("Connect");
@@ -26,19 +30,16 @@ ConnectWidget::ConnectWidget(QWidget *parent) {
     connect(connectButton, &QPushButton::clicked, this, &ConnectWidget::connectButtonClicked);
 }
 
-
 ConnectWidget::~ConnectWidget() {
     delete connectButton;
     delete connectStatus;
     delete hConnectLayout;
     delete hConnectStatusLayout;
     delete widgetVLayout;
-
 }
 
 void ConnectWidget::slotOkButtonDone() {
     LOG(INFO) << "Qt: ConnectWidget slot ok button clicked (connection success)";
-    //qDebug() << "connect widget slot ok button clicked (conn success)";
     connectButton->hide();
     try {
         client.connect();
@@ -61,14 +62,10 @@ void ConnectWidget::slotOkButtonDone() {
         });
         timer->start(500);
     }
-
-
 }
 
 void ConnectWidget::slotDisconnectButtonClicked() {
     LOG(INFO) << "Qt: ConnectWidget slot disconnect button clicked";
-    //qDebug() << "connect widget slot disconnect button clicked";
     connectStatus->clear();
     connectButton->show();
 }
-

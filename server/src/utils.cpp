@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: mit
 // + Pavel Popov additions 2024
 
-#include <ctype.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include <rabbitmq-c/amqp.h>
 #include <rabbitmq-c/framing.h>
@@ -15,6 +10,7 @@
 #include "utils.hpp"
 #include <iomanip>
 #include <glog/logging.h>
+
 
 void die_on_error(int x, const std::string& context) {
   if (x < 0) {
