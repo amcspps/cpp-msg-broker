@@ -50,28 +50,28 @@ void Client::set_port(int port) {
 
 void Client::load_cfg() {
     try {
-        pt::ptree tree;
-        pt::ini_parser::read_ini(fs::absolute(m_cfg_path).string(), tree);
-        set_hostname(tree.get<std::string>("client.host"));
-        set_port(tree.get<int>("client.port"));
-        set_log_dir(tree.get<std::string>("client.log_dir"));
-        set_log_lvl(tree.get<std::string>("client.log_lvl"));
-        LOG(INFO) << "Client: config parsed successfully!";
+      pt::ptree tree;
+      pt::ini_parser::read_ini(fs::absolute(m_cfg_path).string(), tree);
+      set_hostname(tree.get<std::string>("client.host"));
+      set_port(tree.get<int>("client.port"));
+      set_log_dir(tree.get<std::string>("client.log_dir"));
+      set_log_lvl(tree.get<std::string>("client.log_lvl"));
+      LOG(INFO) << "Client: config parsed successfully!";
     }
     catch (std::exception& ex) {
-        LOG(ERROR) << "Client: error while parsing cfg. Error message: " << ex.what();
+      LOG(ERROR) << "Client: error while parsing cfg. Error message: " << ex.what();
     }
 }
 
 void Client::load_cfg(po::variables_map& vm) {
     try{
-        pt::ptree tree;
-        pt::ini_parser::read_ini(fs::absolute(vm["config"].as<std::string>()).string(), tree);
-        set_hostname(tree.get<std::string>("client.host"));
-        set_port(tree.get<int>("client.port"));
+      pt::ptree tree;
+      pt::ini_parser::read_ini(fs::absolute(vm["config"].as<std::string>()).string(), tree);
+      set_hostname(tree.get<std::string>("client.host"));
+      set_port(tree.get<int>("client.port"));
     }
     catch(std::exception& ex) {
-        LOG(ERROR) << "Client: error while parsing cfg. Error message: " << ex.what();
+      LOG(ERROR) << "Client: error while parsing cfg. Error message: " << ex.what();
     }
 }
 
@@ -80,12 +80,12 @@ void Client::publish_request(int num) {
   char uuid_str[37];  
   TestTask::Messages::Request request;
   request.set_id("test-request");
-  std::cout << "num to send:" << num << std::endl; 
+  //std::cout << "num to send:" << num << std::endl; 
   request.set_req(num);
   std::string serialized_request;
   if (!request.SerializeToString(&serialized_request)) {
-        LOG(ERROR) << "Client: Failed to serialize Protobuf request";
-        throw std::runtime_error("Failed to serialize Protobuf request");
+    LOG(ERROR) << "Client: Failed to serialize Protobuf request";
+    //throw std::runtime_error("Failed to serialize Protobuf request");
   }
 
   amqp_basic_properties_t props;
@@ -96,8 +96,8 @@ void Client::publish_request(int num) {
     props.delivery_mode = 2; /* persistent delivery mode */
     props.reply_to = amqp_bytes_malloc_dup(m_reply_to_queue);
     if (props.reply_to.bytes == NULL) {
-        LOG(ERROR) << "Client: Out of memory while copying queue name";
-        throw std::runtime_error("Out of memory while copying queue name");
+      LOG(ERROR) << "Client: Out of memory while copying queue name";
+      throw std::runtime_error("Out of memory while copying queue name");
     }
     
     uuid_generate(uuid);
@@ -117,7 +117,7 @@ void  Client::set_consumer() {
   amqp_basic_consume(m_conn, 1, m_reply_to_queue, amqp_empty_bytes, 0, 1, 0,
                        amqp_empty_table);
     die_on_amqp_error(amqp_get_rpc_reply(m_conn), "Consuming");
-    amqp_bytes_free(m_reply_to_queue);
+    //amqp_bytes_free(m_reply_to_queue);
     LOG(INFO) << "Client: consumer set";
 }
 
@@ -133,20 +133,26 @@ std::tuple<bool, std::string> Client::process_response() {
 
     res = amqp_consume_message(m_conn, &envelope, &timeout, 0);
     if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_TIMEOUT) {
-        LOG(INFO) << "Client: connection timeout reached";
+      LOG(INFO) << "Client: connection timeout reached";
     }
 
     if (AMQP_RESPONSE_NORMAL != res.reply_type) {
-        LOG(ERROR) << "Client: bad message consumption AMQP_RESPONSE_(not)_NORMAL";
-        return std::tuple<bool, std::string> {false, "false"};
+      LOG(ERROR) << "Client: bad message consumption AMQP_RESPONSE_(not)_NORMAL";
+      return std::tuple<bool, std::string> {false, "false"};
     }
 
     TestTask::Messages::Response response;
-    response.ParseFromString(std::string((const char*)envelope.message.body.bytes));
-    std::cout << "received from server: " << response.res() << std::endl;
+    if (!response.ParseFromString(std::string((const char*)envelope.message.body.bytes))) {
+      LOG(ERROR) << "Client: response ParseFromString() failed";
+    }
+    else {
+      LOG(INFO) << "Client: successfully got response:" << response.res();
+    }
+    //response.ParseFromString(std::string((const char*)envelope.message.body.bytes));
+    //std::cout << "received from server: " << response.res() << std::endl;
     amqp_destroy_envelope(&envelope);
 
-    LOG(INFO) << "Client: successfully got response:" << response.res();
+    //LOG(INFO) << "Client: successfully got response:" << response.res();
 
     return std::tuple<bool, std::string> {true, std::to_string(response.res())};;
   }

@@ -47,6 +47,8 @@ void ConnectWidget::slotOkButtonDone() {
         client.open_tcp_socket();
         client.login();
         client.open_channel();
+        client.create_reply_queue();
+        client.set_consumer();
         connectStatus->setText("Connected!");
         LOG(INFO) << "Qt: connection with broker established";
         emit connectionSuccessful();

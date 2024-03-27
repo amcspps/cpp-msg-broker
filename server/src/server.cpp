@@ -135,6 +135,7 @@ void Server::process() {
     }
 
     TestTask::Messages::Request request;
+    
     request.ParseFromString(std::string((const char*)envelope.message.body.bytes));
     
     LOG(INFO) << "Server: received from client:" << request.req();

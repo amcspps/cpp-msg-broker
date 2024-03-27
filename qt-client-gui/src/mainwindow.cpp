@@ -28,8 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
             mainWidget, &MainWidget::slotOkButtonDone);
     connect(settingsDialog, &SettingsDialog::okButtonDone,
             connectWidget, &ConnectWidget::slotOkButtonDone);
-    connect(settingsDialog, &SettingsDialog::okButtonDone,
-            connectWidget, &ConnectWidget::slotOkButtonDone);
     connect(mainWidget, &MainWidget::disconnectButtonClicked,
             this, &MainWindow::slotDisconnectButtonClicked);
     connect (mainWidget, &MainWidget::disconnectButtonClicked,

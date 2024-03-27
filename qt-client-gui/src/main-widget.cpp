@@ -105,9 +105,9 @@ void MainWidget::slotSendButtonClicked() {
         responseLabel->setText("input something");
     }
     else {
-       client.create_reply_queue();
+       //client.create_reply_queue();
        client.publish_request(requestInputLineEdit->text().toInt());
-       client.set_consumer();
+       //client.set_consumer();
        auto response = client.process_response();
        if(!std::get<0>(response)) {
             LOG(ERROR) << "Qt: no response from server";
