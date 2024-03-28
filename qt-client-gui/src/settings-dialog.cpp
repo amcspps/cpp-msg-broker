@@ -1,5 +1,4 @@
 #include "settings-dialog.h"
-#include <iostream>
 #include "client.h"
 
 
