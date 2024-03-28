@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 3.15.0)
 
 find_package(GTest REQUIRED)
-find_package(Boost REQUIRED COMPONENTS program_options filesystem)
+find_package(Boost REQUIRED COMPONENTS program_options)
 include_directories(${GTEST_INCLUDE_DIRS})
-
-#set(CMAKE_CXX_STANDARD 17 REQUIRED)
 
 add_executable(
   server_tests
@@ -20,12 +18,12 @@ target_link_libraries(
   GTest::gtest
   GTest::gtest_main
   Boost::program_options
-  Boost::filesystem
   rabbitmq
-  uuid
   glog::glog
   Message
 )
-#target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.13.0/build/librabbitmq)
+target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.14.0/build/librabbitmq)
+#manual library build, archlinux error: librabbitmq.so not found (???),
+#on ubuntu works fine, can be commented
 
 add_test(NAME Server-Tests COMMAND server_tests)

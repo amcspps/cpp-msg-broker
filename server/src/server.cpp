@@ -4,9 +4,9 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
-//#include <boost/filesystem.hpp>
 #include <filesystem>
 #include <glog/logging.h>
+
 
 namespace pt = boost::property_tree;
 namespace fs = std::filesystem;
@@ -85,10 +85,10 @@ void Server::open_channel() {
 }
 
 void Server::declare_queue() {
-    amqp_queue_declare_ok_t *r = amqp_queue_declare(
-        m_conn, 1, amqp_cstring_bytes(m_queuename), 0, 0, 0, 1, amqp_empty_table);
-    die_on_amqp_error(amqp_get_rpc_reply(m_conn), "Declaring queue");
-    LOG(INFO) << "Server: queue rpc_queue declared";
+  amqp_queue_declare_ok_t *r = amqp_queue_declare(
+      m_conn, 1, amqp_cstring_bytes(m_queuename), 0, 0, 0, 1, amqp_empty_table);
+  die_on_amqp_error(amqp_get_rpc_reply(m_conn), "Declaring queue");
+  LOG(INFO) << "Server: queue rpc_queue declared";
 }
 
 void Server::set_queue_listener() {
@@ -135,15 +135,17 @@ void Server::process() {
     }
 
     TestTask::Messages::Request request;
-    
-    request.ParseFromString(std::string((const char*)envelope.message.body.bytes));
-    
-    LOG(INFO) << "Server: received from client:" << request.req();
+  
+    if(!request.ParseFromString(std::string((const char*)envelope.message.body.bytes, envelope.message.body.len))) {
+      LOG(ERROR) << "Server: request ParseFromString() failed";  
+    }
+    else {
+      LOG(INFO) << "Server: received from client:" << request.req();
+    }
     
     amqp_basic_properties_t reply_props;
-    reply_props._flags = AMQP_BASIC_CORRELATION_ID_FLAG;
-    reply_props.correlation_id = envelope.message.properties.correlation_id;
-    
+    reply_props._flags = AMQP_BASIC_CONTENT_TYPE_FLAG;
+    reply_props.content_type = amqp_cstring_bytes("text/plain");
 
     TestTask::Messages::Response response;
     response.set_id("test-response");

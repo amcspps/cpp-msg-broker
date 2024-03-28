@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(myclient VERSION 0.1 LANGUAGES CXX)
+project(cl VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
-find_package(Boost REQUIRED COMPONENTS program_options filesystem)
+find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(glog REQUIRED)
 add_subdirectory(proto-files)
 
@@ -35,36 +35,36 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(myclient
+    qt_add_executable(cl
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 else()
-    add_executable(myclient
+    add_executable(cl
         ${PROJECT_SOURCES}
     )
 endif()
 
-target_link_libraries(myclient 
+target_link_libraries(cl 
                       PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
                       Message ${PROTOBUF_DEPS}
-                      uuid
                       glog::glog
                       rabbitmq
-                      Boost::program_options 
-                      Boost::filesystem
+                      Boost::program_options
 )
 
-#target_link_directories(myclient PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq) # trouble with arch, manual library build
+target_link_directories(cl PRIVATE ../rabbitmq-c-0.14.0/build/librabbitmq) 
+#manual library build, archlinux error: librabbitmq.so not found (???),
+#on ubuntu works fine, can be commented 
 
 
 include(GNUInstallDirs)
-install(TARGETS myclient
+install(TARGETS cl
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(myclient)
+    qt_finalize_executable(cl)
 endif()

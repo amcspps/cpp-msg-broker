@@ -6,7 +6,7 @@ project(rabbitmq_server VERSION 1.0.0 DESCRIPTION "Работа с брокер�
 set(CMAKE_CXX_STANDARD 17 REQUIRED)
 set(CMAKE_BUILD_TYPE Debug)
 
-find_package(Boost REQUIRED COMPONENTS program_options filesystem)
+find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(glog REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -25,7 +25,8 @@ target_link_libraries(srv PUBLIC
                       glog::glog
                       rabbitmq
                       Boost::program_options
-                      Boost::filesystem
 )
-#target_link_directories(srv PRIVATE ../rabbitmq-c-0.13.0/build/librabbitmq)
+target_link_directories(srv PRIVATE ../rabbitmq-c-0.14.0/build/librabbitmq)
+#manual library build, archlinux error: librabbitmq.so not found (???),
+#on ubuntu works fine, can be commented 
 
