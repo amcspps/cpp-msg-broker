@@ -26,7 +26,8 @@ target_link_libraries(srv PUBLIC
                       rabbitmq
                       Boost::program_options
 )
-target_link_directories(srv PRIVATE ../rabbitmq-c-0.14.0/build/librabbitmq)
+
+#target_link_directories(srv PRIVATE ../rabbitmq-c-0.14.0/build/librabbitmq)
 #manual library build, archlinux error: librabbitmq.so not found (???),
 #on ubuntu works fine, can be commented 
 

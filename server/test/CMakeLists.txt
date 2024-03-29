@@ -22,7 +22,8 @@ target_link_libraries(
   glog::glog
   Message
 )
-target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.14.0/build/librabbitmq)
+
+#target_link_directories(server_tests PRIVATE ../../rabbitmq-c-0.14.0/build/librabbitmq)
 #manual library build, archlinux error: librabbitmq.so not found (???),
 #on ubuntu works fine, can be commented
 
